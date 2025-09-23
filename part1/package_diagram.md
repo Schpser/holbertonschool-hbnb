@@ -1,3 +1,5 @@
+```mermaid
+
 classDiagram
     class PresentationLayer {
         <<Package>>
@@ -20,3 +22,5 @@ classDiagram
     
     PresentationLayer --> BusinessLogicLayer : Utilise via Facade
     BusinessLogicLayer --> PersistenceLayer : Persiste les données
+
+```
