@@ -20,7 +20,7 @@ classDiagram
         +Repository
     }
     
-    PresentationLayer --> BusinessLogicLayer : Utilise via Facade
-    BusinessLogicLayer --> PersistenceLayer : Persiste les données
+    PresentationLayer --> BusinessLogicLayer : Facade pattern
+    BusinessLogicLayer --> PersistenceLayer : Database Operations
 
 ```
