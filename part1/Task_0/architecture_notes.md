@@ -59,7 +59,7 @@ sequenceDiagram
     participant D as PersistenceLayer
     P->>B: Request with Facade
     B->>D: Database operation from Business Logic
-    D-->>B: Résults
+    D-->>B: Results
     B-->>P: Business response
 ```
 ## :circus_tent: Patterns and Couplings
@@ -76,7 +76,7 @@ sequenceDiagram
 
 ## :bulb: Architecture Rationale
 
-- **Séparation of Concerns** : Each layer has a distinct responsibility
+- **Separation of Concerns** : Each layer has a distinct responsibility
 - **Maintainability** : Modular design for easier updates and debugging
 - **Testability** : Independent layers facilitate unit testing
 - **Scalability** : Scalable architecture to accommodate future growth
