@@ -1,3 +1,5 @@
-## Detailed Class Diagram
+## Business Logic Layer - Class Diagram
 
-<a href="./Business_Logic_Diagram.png">Business Logic Diagram (PNG)</a>
+<div align="center">
+    <img src="./Business_Logic_Diagram.png" alt="Detailed class diagram showing User, Place, Review, Amenity entities with relationships" width="800">
+</div>
