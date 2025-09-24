@@ -1,7 +1,7 @@
+## Detailed Class Diagram
+
 ```mermaid
 classDiagram
-    config:
-        layout: elk
     class BaseModel {
         <<abstract>>
         +id: UUID
