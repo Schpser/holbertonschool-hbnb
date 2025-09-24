@@ -1,3 +1,4 @@
+```mermaid
 classDiagram
     config:
         layout: elk
@@ -77,3 +78,4 @@ classDiagram
     User ..> Place : uses in get_places()
     User ..> Review : uses in get_reviews()
     Place ..> Amenity : uses in get_amenities()
+```
