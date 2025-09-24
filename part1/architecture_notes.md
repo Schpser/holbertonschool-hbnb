@@ -6,30 +6,28 @@ Our application is based on **3-tier** architecture, which are 3 layers of each 
 
 ```mermaid
 classDiagram
-    class PresentationLayer
-        {
-            <<Package>>
-            +UserService
-            +PlaceService
-            +APIEndpoints
-        }
-    class BusinessLogicLayer
-        {
-            <<Package>>
-            +User
-            +Place
-            +Review
-            +Amenity
-        }
-    class PersistenceLayer
-        {
-            <<Package>>
-            +Database
-            +Repository
-        }
+    class PresentationLayer {
+        <<Package>>
+        +UserService
+        +PlaceService
+        +APIEndpoints
+    }
+    class BusinessLogicLayer {
+        <<Package>>
+        +User
+        +Place
+        +Review
+        +Amenity
+    }
+    class PersistenceLayer {
+        <<Package>>
+        +Database
+        +Repository
+    }
     PresentationLayer --> BusinessLogicLayer : Facade pattern
     BusinessLogicLayer --> PersistenceLayer : Database Operations
 ```
+
 ## :bar_chart: Layers descriptions
 
 ### :dart: **PresentationLayer**
