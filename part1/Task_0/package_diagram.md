@@ -8,6 +8,7 @@ classDiagram
     }
     class BusinessLogicLayer {
         <<Package>>
+        +BaseModel
         +User
         +Place
         +Review
