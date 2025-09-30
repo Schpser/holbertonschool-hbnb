@@ -21,3 +21,8 @@
 </div>
 
 ---
+
+### | Fetching a List of Places
+---
+<div align="center">
+    <img src="Fetching_Places.png" alt="Detailed class diagram showing User, Place, Review, Amenity entities with relationships" width="800">
