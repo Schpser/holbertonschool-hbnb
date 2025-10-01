@@ -69,8 +69,7 @@ Responsibility :__ Data storage, retrieval, and database management
 ### 2.4 Data Flow
 
 <div align="center">
-	<img src="Relations_Layer
-	.png" alt="Detailed class diagram showing User, Place, Review, Amenity entities with relationships" width="800">
+	<img src="Relations_Layer.png" alt="Detailed class diagram showing User, Place, Review, Amenity entities with relationships" width="800">
 </div>
 
 ### 2.5 Design Patterns
