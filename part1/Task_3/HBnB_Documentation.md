@@ -69,37 +69,37 @@ Responsibility :__ Data storage, retrieval, and database management
 ### 2.4 Data Flow
 
 <div align="center">
-	<img src="Relations_Layer.png" alt="Detailed class diagram showing User, Place, Review, Amenity entities with relationships" width="800">
+	<img src="Data_Flow.png" alt="Detailed class diagram showing User, Place, Review, Amenity entities with relationships" width="800">
 </div>
 
 ### 2.5 Design Patterns
 
 __Facade Pattern__
 
-Implementation: PresentationLayer → BusinessLogicLayer
+	Implementation : PresentationLayer → BusinessLogicLayer
 
-Purpose: Simplifies client interactions and reduces complexity
+	Purpose : Simplifies client interactions and reduces complexity
 
-Benefit: Provides a unified interface to complex subsystems
+	Benefit : Provides a unified interface to complex subsystems
 
-Repository Pattern
-Implementation: BusinessLogicLayer → PersistenceLayer
+	Repository Pattern
+	Implementation : BusinessLogicLayer → PersistenceLayer
 
-Purpose: Abstracts data access logic
+	Purpose : Abstracts data access logic
 
-Benefit: Improves maintainability and testability
+	Benefit : Improves maintainability and testability
 
 ### 2.6 Architecture Rationale
 
-Separation of Concerns: Each layer has distinct responsibilities
+	Separation of Concerns : Each layer has distinct responsibilities
 
-Maintainability: Modular design facilitates updates and debugging
+	Maintainability : Modular design facilitates updates and debugging
 
-Testability: Independent layers enable comprehensive unit testing
+	Testability : Independent layers enable comprehensive unit testing
 
-Scalability: Architecture supports horizontal scaling
+	Scalability : Architecture supports horizontal scaling
 
-Security: Layered validation and authentication
+	Security : Layered validation and authentication
 
 ## 3. Business Logic Layer
 
