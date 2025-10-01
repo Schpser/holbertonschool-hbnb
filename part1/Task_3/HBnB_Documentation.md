@@ -67,16 +67,12 @@ Responsibility :__ Data storage, retrieval, and database management
 	Repository : Data access abstraction layer
 
 ### 2.4 Data Flow
-```
-sequenceDiagram
-	participant P as PresentationLayer
-	participant B as BusinessLogicLayer
-	participant D as PersistenceLayer
-	P->>B: Request with Facade
-	B->>D: Database operation from Business Logic
-	D-->>B: Results
-	B-->>P: Business response
-```
+
+<div align="center">
+	<img src="Relations_Layer
+	.png" alt="Detailed class diagram showing User, Place, Review, Amenity entities with relationships" width="800">
+</div>
+
 ### 2.5 Design Patterns
 
 __Facade Pattern__
