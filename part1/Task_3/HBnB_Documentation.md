@@ -40,31 +40,31 @@ The application follows a 3-tier architecture with clear separation of concerns 
 🎯 __Presentation Layer
 Responsibility :__ User interface and API endpoints
 
-	Key Components :
+	Key Components
 
-	UserService : Handles user operations and authentication
+	• UserService : Handles user operations and authentication
 
-	PlaceService : Manages property-related operations
+	• PlaceService : Manages property-related operations
 
-	APIEndpoints : RESTful interface for client interactions
+	• APIEndpoints : RESTful interface for client interactions
 
 ⚙️ __Business Logic Layer
 Responsibility :__ Business rules, data processing, and validation
 
-	Key Components :
+	Key Components
 
-	BaseModel : Abstract base class for all entities
+	•BaseModel : Abstract base class for all entities
 
-	Core entities: User, Place, Review, Amenity
+	• Core entities: User, Place, Review, Amenity
 
 💾 __Persistence Layer
 Responsibility :__ Data storage, retrieval, and database management
 
-	Key Components :
+	Key Components 
 
-	Database : Connection management and query execution
+	• Database : Connection management and query execution
 
-	Repository : Data access abstraction layer
+	• Repository : Data access abstraction layer
 
 ### 2.4 Data Flow
 
