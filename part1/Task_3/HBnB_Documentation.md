@@ -245,7 +245,6 @@ The business logic layer implements the core domain model with entities represen
 ### 3.3 Relationship Architecture
 
 __Inheritance Relationships__
-
 • Pattern : BaseModel <|-- [Entity]
 
 • Benefit : Code reuse and consistent behavior across entities
@@ -253,7 +252,6 @@ __Inheritance Relationships__
 • Principle: Open/Closed principle compliance
 
 __Association Relationships__
-
 • User -- Place (ownership) : Bidirectional association supporting host functionality
 
 • User -- Review (authorship) : Ensures review traceability and accountability
@@ -261,11 +259,9 @@ __Association Relationships__
 • Place -- Review (feedback) : Enables rating calculations and reputation management
 
 __Composition Relationships__
-
 • Place -- AmenityPlace & Amenity -- AmenityPlace : Strong compositions ensuring referential integrity
 
 __Dependency Relationships__
-
 • Temporary usage relationships for method collaborations
 
 • Maintains loose coupling while enabling necessary interactions
@@ -428,48 +424,9 @@ __HTTP Status Code Usage__
 
 	500 Internal Server Error - Server-side issues
 
-## 5. Design Principles & Best Practices
-### 5.1 Applied Principles
+## 5. Conclusion
 
-Separation of Concerns: Distinct layer responsibilities
-
-Single Responsibility: Each class has one reason to change
-
-Open/Closed: Entities open for extension, closed for modification
-
-Loose Coupling: Minimal dependencies between components
-
-### 5.2 Security Considerations
-Layered authentication and authorization
-
-Private attributes with controlled access
-
-Input validation at multiple levels
-
-Secure password handling
-
-### 5.3 Performance Optimizations
-Efficient database query patterns
-
-Minimal data transfer between layers
-
-Appropriate caching strategies
-
-Horizontal scaling capabilities
-
-### 5.4 Maintainability Features
-Modular architecture
-
-Consistent naming conventions
-
-Comprehensive documentation
-
-Test-friendly design
-
-## 6. Conclusion
-This technical documentation provides a comprehensive blueprint for the HBnB project implementation. The 3-tier architecture with clear separation of concerns, well-defined business entities, and structured API interactions forms a solid foundation for building a scalable and maintainable rental platform.
-
-The design decisions outlined in this document balance performance, security, and flexibility while maintaining code quality and developer productivity throughout the implementation lifecycle.
+This documentation outlines the HBnB system's architecture, focusing on the business logic layer, entity relationships, and API interaction flows. The design emphasizes scalability, maintainability, and security through a well-defined 3-tier architecture and robust business rules.
 
 Document Version: 1.0
 Last Updated: [03/10/2024]
