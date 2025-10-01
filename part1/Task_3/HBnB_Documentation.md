@@ -105,7 +105,7 @@ __Facade Pattern__
 
 ### 3.1 Class Diagram Overview
 
-The business logic layer implements the core domain model with entities representing users, properties, reviews, and amenities.
+The business logic layer implements the core domain model with a BaseModel class extended by entities representing Users, Properties, Reviews, and Amenities.
 
 ### 3.2 Entity Specifications
 🔹 __BaseModel (Abstract Class)__
