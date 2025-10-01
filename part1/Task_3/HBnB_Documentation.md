@@ -110,9 +110,9 @@ The business logic layer implements the core domain model with entities represen
 ### 3.2 Entity Specifications
 🔹 __BaseModel (Abstract Class)__
 
-	Purpose: Foundation for all business entities providing common functionality
+	Purpose : Foundation for all business entities providing common functionality
 
-	Attributes:
+	Attributes :
 
 		id (UUID): Universal unique identifier (UUID4 standard)
 
@@ -120,7 +120,7 @@ The business logic layer implements the core domain model with entities represen
 
 		updated_at (datetime): Automatic modification timestamp
 
-	Methods:
+	Methods :
 
 		save(): Handles persistence with automatic timestamp updates
 
@@ -128,9 +128,9 @@ The business logic layer implements the core domain model with entities represen
 
 👤 __User Entity__
 
-	Purpose: Represents system users with role-based capabilities
+	Purpose : Represents system users with role-based capabilities
 
-	Attributes:
+	Attributes :
 
 		first_name, last_name (string): Personal identification
 
@@ -146,7 +146,7 @@ The business logic layer implements the core domain model with entities represen
 
 		password_hash (private): Secure authentication storage
 
-	Methods:
+	Methods :
 
 		get_email(): Controlled email access
 
@@ -162,9 +162,9 @@ The business logic layer implements the core domain model with entities represen
 
 🏠 __Place Entity__
 
-	Purpose: Manages rental property information and availability
+	Purpose : Manages rental property information and availability
 
-	Attributes:
+	Attributes :
 
 		title (string): Property listing headline
 
@@ -184,7 +184,7 @@ The business logic layer implements the core domain model with entities represen
 
 		is_available (private): Booking availability status
 
-	Methods:
+	Methods :
 
 		get_price(): Controlled price access
 
@@ -196,9 +196,9 @@ The business logic layer implements the core domain model with entities represen
 
 ⭐ __Review Entity__
 
-	Purpose: Handles user feedback with verification capabilities
+	Purpose : Handles user feedback with verification capabilities
 
-	Attributes:
+	Attributes :
 
 		place_id (UUID): Reviewed property reference
 
@@ -210,7 +210,7 @@ The business logic layer implements the core domain model with entities represen
 
 		is_verified (private): Authenticity verification status
 
-	Methods:
+	Methods :
 
 		get_rating(): Controlled rating access
 
@@ -222,9 +222,9 @@ The business logic layer implements the core domain model with entities represen
 
 🛋️ __Amenity Entity__
 
-	Purpose: Manages property features for search and filtering
+	Purpose : Manages property features for search and filtering
 
-	Attributes:
+	Attributes :
 
 		name (string): Feature identification
 
@@ -234,9 +234,9 @@ The business logic layer implements the core domain model with entities represen
 
 🔗 __AmenityPlace (Association Class)__
 
-	Purpose: Manages many-to-many relationships between properties and amenities
+	Purpose : Manages many-to-many relationships between properties and amenities
 
-	Attributes:
+	Attributes :
 
 		place_id (UUID): Place foreign key
 
@@ -244,43 +244,47 @@ The business logic layer implements the core domain model with entities represen
 
 ### 3.3 Relationship Architecture
 
-Inheritance Relationships
-Pattern: BaseModel <|-- [Entity]
+__Inheritance Relationships__
 
-Benefit: Code reuse and consistent behavior across entities
+Pattern : BaseModel <|-- [Entity]
+
+Benefit : Code reuse and consistent behavior across entities
 
 Principle: Open/Closed principle compliance
 
-Association Relationships
-User -- Place (ownership): Bidirectional association supporting host functionality
+__Association Relationships__
 
-User -- Review (authorship): Ensures review traceability and accountability
+User -- Place (ownership) : Bidirectional association supporting host functionality
 
-Place -- Review (feedback): Enables rating calculations and reputation management
+User -- Review (authorship) : Ensures review traceability and accountability
 
-Composition Relationships
-Place -- AmenityPlace & Amenity -- AmenityPlace: Strong compositions ensuring referential integrity
+Place -- Review (feedback) : Enables rating calculations and reputation management
 
-Dependency Relationships
+__Composition Relationships__
+
+Place -- AmenityPlace & Amenity -- AmenityPlace : Strong compositions ensuring referential integrity
+
+__Dependency Relationships__
+
 Temporary usage relationships for method collaborations
 
 Maintains loose coupling while enabling necessary interactions
 
 ### 3.4 Business Logic Implementation
 
-User Role Management: Host/guest duality with role-based access control
+__User Role Management__ : Host/guest duality with role-based access control
 
-Privacy and Security: Private attributes with controlled access methods
+__Privacy and Security__ : Private attributes with controlled access methods
 
-Review Integrity: Authentic, traceable feedback with verification
+__Review Integrity__ : Authentic, traceable feedback with verification
 
-Property Management: Data consistency for features and search capabilities
+__Property Management__ : Data consistency for features and search capabilities
 
-Geospatial Services: Location-based functionality through coordinates
+__Geospatial Services__ : Location-based functionality through coordinates
 
-Dynamic Pricing: Flexible pricing models with validation
+__Dynamic Pricing__ : Flexible pricing models with validation
 
-Capacity Planning: Intelligent booking validation through guest limits
+__Capacity Planning__ : Intelligent booking validation through guest limits
 
 ## 4. API Interaction Flow
 
@@ -347,78 +351,82 @@ Sequence:
 	<img src="Fetching_Places.png" alt="Detailed class diagram showing User, Place, Review, Amenity entities with relationships" width="800">
 </div>
 
-	Supported Filters:
+	Supported Filters :
 
-	City/location-based filtering
+	• City/location-based filtering
 
-	Price range (min_price, max_price)
+	• Price range (min_price, max_price)
 
-	Guest capacity (max_guests)
+	• Guest capacity (max_guests)
 
-	Room count (number_of_rooms)
+	• Room count (number_of_rooms)
 
-	Geographic proximity (coordinates)
+	• Geographic proximity (coordinates)
 
-	Performance Optimizations:
+	• Performance Optimizations:
 
-	Database indexing on filter columns
+	• Database indexing on filter columns
 
-	Pagination for large result sets
+	• Pagination for large result sets
 
-	Efficient query optimization
+	• Efficient query optimization
 
 ### 4.5 Layer Interaction Patterns
-Presentation Layer (API)
-Request routing and endpoint management
+	Presentation Layer (API)
+• Request routing and endpoint management
 
-Initial authentication checks
+• Initial authentication checks
 
-Input validation and sanitization
+• Input validation and sanitization
 
-Response formatting and HTTP status management
+• Response formatting and HTTP status management
 
-Business Logic Layer (Services)
-Core business rules enforcement
+	Business Logic Layer (Services)
+• Core business rules enforcement
 
-Data validation and enrichment
+• Data validation and enrichment
 
-Relationship management
+• Relationship management
 
-Security and access control logic
+• Security and access control logic
 
-Persistence Layer (Database)
-Data storage and retrieval
+	Persistence Layer (Database)
+• Data storage and retrieval
 
-Query optimization and execution
+• Query optimization and execution
 
-Transaction management
+• Transaction management
 
-Data integrity enforcement
+• Data integrity enforcement
 
 ### 4.6 Security & Validation Patterns
 
-Authentication Flow
-text
-Client → [JWT Token] → API → AuthService → [user_id] → Business Logic
-Validation Hierarchy
-Input Validation (API Layer) - Syntax checking
+__Authentication Flow__
+<div align="center">
+	<img src="Process.png" alt="Detailed class diagram showing User, Place, Review, Amenity entities with relationships" width="800">
+</div>
 
-Business Validation (Service Layer) - Rule enforcement
+__Validation Hierarchy__
 
-Data Validation (Database Layer) - Integrity constraints
+	Input Validation (API Layer) - Syntax checking
 
-HTTP Status Code Usage
-200 OK - Successful retrieval operations
+	Business Validation (Service Layer) - Rule enforcement
 
-201 Created - Successful resource creation
+	Data Validation (Database Layer) - Integrity constraints
 
-400 Bad Request - Client-side validation errors
+__HTTP Status Code Usage__
 
-401 Unauthorized - Authentication failures
+	200 OK - Successful retrieval operations
 
-404 Not Found - Resource not found
+	201 Created - Successful resource creation
 
-500 Internal Server Error - Server-side issues
+	400 Bad Request - Client-side validation errors
+
+	401 Unauthorized - Authentication failures
+
+	404 Not Found - Resource not found
+
+	500 Internal Server Error - Server-side issues
 
 ## 5. Design Principles & Best Practices
 ### 5.1 Applied Principles
