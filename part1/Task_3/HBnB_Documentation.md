@@ -53,7 +53,7 @@ Responsibility :__ Business rules, data processing, and validation
 
 	Key Components
 
-	•BaseModel : Abstract base class for all entities
+	• BaseModel : Abstract base class for all entities
 
 	• Core entities: User, Place, Review, Amenity
 
