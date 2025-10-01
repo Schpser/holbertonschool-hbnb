@@ -5,13 +5,13 @@
 
 ### 1.1 Project Overview
 
-HBnB is a property rental platform that connects property owners (hosts) with travelers (guests). The application provides a complete rental management cycle, from user registration to property listing and review systems.
+HBnB is a rental platform connecting hosts and guests for short-term property rentals. The system is designed with a 3-tier architecture, separating __Presentation, Business logic, and Persistence layers__ to ensure scalability, maintainability, and security.
 
 ### 1.2 Document Purpose
-This technical document serves as a comprehensive reference for the HBnB project's architecture and design. It describes the system organization, business entities, interaction flows, and design decisions, providing detailed guidance for implementation phases.
+This document provides a comprehensive overview of the HBnB system architecture, focusing on the __Business logic layer, Entity relationships, and API interaction flows__. It serves as a blueprint for developers and stakeholders to understand the design decisions and implementation strategies.
 
 ### 1.3 Scope
-This documentation covers:
+__This documentation covers :__
 
 	High-level system architecture
 
@@ -26,34 +26,14 @@ This documentation covers:
 ## 2. High-Level Architecture
 
 ### 2.1 Architectural Pattern
-The application follows a 3-tier architecture with clear separation of concerns between presentation, business logic, and persistence layers.
+
+The application follows a 3-tier architecture with clear separation of concerns between Presentation, Business logic, and Persistence layers.
 
 ### 2.2 Package Diagram
 
-```mermaid
-classDiagram
-    class PresentationLayer {
-        <<Package>>
-        +UserService
-        +PlaceService
-        +APIEndpoints
-    }
-    class BusinessLogicLayer {
-        <<Package>>
-        +BaseModel
-        +User
-        +Place
-        +Review
-        +Amenity
-    }
-    class PersistenceLayer {
-        <<Package>>
-        +Database
-        +Repository
-    }
-    PresentationLayer --> BusinessLogicLayer : Facade pattern
-    BusinessLogicLayer --> PersistenceLayer : Database Operations
-```
+<div align="center">
+	<img src="Package_Diagram.png" alt="Detailed class diagram showing User, Place, Review, Amenity entities with relationships" width="800">
+</div>
 
 ### 2.3 Layer Descriptions
 
