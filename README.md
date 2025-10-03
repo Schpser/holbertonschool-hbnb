@@ -1,6 +1,6 @@
 <div align="center"><img src="https://github.com/ksyv/holbertonschool-web_front_end/blob/main/baniere_holberton.png"></div>
 
-# Titre du Projet (à remplacer)
+# HBnB Part 1 - Software Architecture & Documentation
 
 ## Table of Contents :
 
