@@ -43,7 +43,8 @@ class UserList(Resource):
                 'email': getattr(u, 'email', None)
             })
         return result, 200
-@api.route('/<user_id>')
+
+@api.route('/<string:user_id>')
 class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
     @api.response(404, 'User not found')
@@ -53,3 +54,30 @@ class UserResource(Resource):
         if not user:
             return {'error': 'User not found'}, 404
         return {'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email}, 200
+
+    @api.expect(user_model, validate=True)
+    @api.response(200, 'User updated successfully')
+    @api.response(400, 'Email already registered')
+    @api.response(404, 'User not found')
+    def put(self, user_id):
+        """Update a user"""
+        user = facade.get_user(user_id)
+        if not user:
+            return {'error': 'User not found'}, 404
+
+        new_data = api.payload
+
+        if 'email' in new_data and new_data['email'] != user.email:
+            existing_user = facade.get_user_by_email(new_data['email'])
+            if existing_user and existing_user.id != user_id:
+                return {'error': 'Email already registered'}, 400
+        updated = facade.update_user(user_id, new_data)
+        if not updated:
+            return {'error': 'User not found'}, 404
+
+        return {
+            'id': updated.id,
+            'first_name': updated.first_name,
+            'last_name': updated.last_name,
+            'email': updated.email
+        }, 200

@@ -1,5 +1,8 @@
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
+from app.models.place import Place
+from app.models.review import Review
+from app.models.amenity import Amenity
 
 class HBnBFacade:
     def __init__(self):
@@ -20,3 +23,9 @@ class HBnBFacade:
         if hasattr(self.user_repo, 'get_all'):
             return self.user_repo.get_all()
         return []
+    
+    def update_user(self, user_id, data):
+        return self.user_repo.update(user_id, data)
+
+    def delete_user(self, user_id):
+        self.user_repo.delete(user_id)
