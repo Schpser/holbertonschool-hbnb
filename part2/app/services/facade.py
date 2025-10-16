@@ -7,6 +7,7 @@ from app.models.amenity import Amenity
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
+        self.amenity_repo = InMemoryRepository()
 
     def create_user(self, user_data):
         user = User(**user_data)
@@ -14,10 +15,10 @@ class HBnBFacade:
         return user
 
     def get_user(self, user_id):
-        print(f"DEBUG: Recherche user_id: '{user_id}'")
-        print(f"DEBUG: IDs disponibles: {list(self.user_repo._storage.keys())}")
+        print(f"DEBUG: Research user_id: '{user_id}'")
+        print(f"DEBUG: IDs available: {list(self.user_repo._storage.keys())}")
         result = self.user_repo.get(user_id)
-        print(f"DEBUG: Utilisateur trouvé: {result}")
+        print(f"DEBUG: User found: {result}")
         return result
 
     def get_user_by_email(self, email):
@@ -29,28 +30,30 @@ class HBnBFacade:
         return []
     
     def update_user(self, user_id, data):
-        print(f"DEBUG: Mise à jour user_id: '{user_id}' avec data: {data}")
+        print(f"DEBUG: Update user_id: '{user_id}' avec data: {data}")
         result = self.user_repo.update(user_id, data)
-        print(f"DEBUG: Résultat update: {result}")
+        print(f"DEBUG: Update result: {result}")
         user = self.user_repo.get(user_id)
-        print(f"DEBUG: Utilisateur après update: {user}")
+        print(f"DEBUG: Uptdated User: {user}")
         return user
 
     def delete_user(self, user_id):
         self.user_repo.delete(user_id)
 
     def create_amenity(self, amenity_data):
-    # Placeholder for logic to create an amenity
-        pass
+        amenity = Amenity(**amenity_data)
+        self.amenity_repo.add(amenity)
+        return amenity
 
     def get_amenity(self, amenity_id):
-        # Placeholder for logic to retrieve an amenity by ID
-        pass
+        return self.amenity_repo.get(amenity_id)
 
     def get_all_amenities(self):
-        # Placeholder for logic to retrieve all amenities
-        pass
+        return self.amenity_repo.get_all()
 
     def update_amenity(self, amenity_id, amenity_data):
-        # Placeholder for logic to update an amenity
-        pass
+        amenity = self.amenity_repo.get(amenity_id)
+        if amenity:
+            amenity.update(amenity_data)
+            return amenity
+        return None
