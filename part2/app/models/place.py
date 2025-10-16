@@ -35,3 +35,24 @@ class Place(BaseModel):
     def add_amenity(self, amenity):
         """Add an amenity to the place."""
         self.amenities.append(amenity)
+
+    def update(self, data):
+        """Update place attributes with validation"""
+        for key, value in data.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+
+    def to_dict(self):
+        """Convert the object to dictionary"""
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'price': self.price,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'owner_id': self.owner.id,
+            'amenities': [amenity.id for amenity in self.amenities],
+            'created_at': self.created_at.isoformat() if hasattr(self, 'created_at') else None,
+            'updated_at': self.updated_at.isoformat() if hasattr(self, 'updated_at') else None
+        }
