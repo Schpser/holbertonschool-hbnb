@@ -31,7 +31,7 @@ http://localhost:5000/api/v1/
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Schpser/holbertonschool-hbnb.git
 cd holbertonschool-hbnb/part2
 ```
 
@@ -39,7 +39,7 @@ cd holbertonschool-hbnb/part2
 
 ```bash
 python3 -m venv venv
-source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+source venv/bin/activate
 ```
 
 ### 3. Install dependencies
