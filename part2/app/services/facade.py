@@ -5,12 +5,13 @@ from app.models.review import Review
 from app.models.amenity import Amenity
 
 class HBnBFacade:
-    def init(self):
+    def __init__(self):
         self.user_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
+        self.place_repo = InMemoryRepository()
 
     def create_user(self, user_data):
-        user = User(user_data)
+        user = User(**user_data)
         self.user_repo.add(user)
         return user
 
@@ -41,7 +42,7 @@ class HBnBFacade:
         self.user_repo.delete(user_id)
 
     def create_amenity(self, amenity_data):
-        amenity = Amenity(amenity_data)
+        amenity = Amenity(**amenity_data)
         self.amenity_repo.add(amenity)
         return amenity
 
@@ -57,3 +58,43 @@ class HBnBFacade:
             amenity.update(amenity_data)
             return amenity
         return None
+    
+    def create_place(self, place_data):
+        owner = self.get_user(place_data['owner_id'])
+        if not owner:
+            return None
+
+        if 'amenities' in place_data:
+            for amenity_id in place_data['amenities']:
+                amenity = self.get_amenity(amenity_id)
+                if not amenity:
+                    return None
+    
+        place = Place(**place_data)
+        self.place_repo.add(place)
+        return place
+
+    def get_place(self, place_id):
+        return self.place_repo.get(place_id)
+
+    def get_all_places(self):
+        return self.place_repo.get_all()
+
+    def update_place(self, place_id, place_data):
+        place = self.place_repo.get(place_id)
+        if not place:
+            return None
+
+        if 'owner_id' in place_data:
+            owner = self.get_user(place_data['owner_id'])
+            if not owner:
+                return None
+    
+        if 'amenities' in place_data:
+            for amenity_id in place_data['amenities']:
+                amenity = self.get_amenity(amenity_id)
+                if not amenity:
+                    return None
+
+        place.update(place_data)
+        return place
