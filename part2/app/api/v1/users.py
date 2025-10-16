@@ -24,14 +24,18 @@ class UserList(Resource):
         existing_user = facade.get_user_by_email(user_data['email'])
         if existing_user:
             return {'error': 'Email already registered'}, 400
-
-        new_user = facade.create_user(user_data)
-        return {
-            'id': new_user.id, 
-            'first_name': new_user.first_name, 
-            'last_name': new_user.last_name, 
-            'email': new_user.email
-        }, 201
+        try:
+            new_user = facade.create_user(user_data)
+            return {
+                'id': new_user.id, 
+                'first_name': new_user.first_name, 
+                'last_name': new_user.last_name, 
+                'email': new_user.email
+            }, 201
+        except ValueError as e:
+            return {'error': str(e)}, 400
+        except Exception as e:
+            return {'error': f'Internal server error: {str(e)}'}, 500
     
     def get(self):
         """Get all users"""
@@ -66,26 +70,29 @@ class UserResource(Resource):
     def put(self, user_id):
         """Update a user"""
         user_data = user_namespace.payload
-        
-        # Check if the user exists
+
         existing_user = facade.get_user(user_id)
         if not existing_user:
             return {'error': 'User not found'}, 404
         
-        # Check if email is being changed and if it's already taken by another user
+
         if 'email' in user_data and user_data['email'] != existing_user.email:
             user_with_email = facade.get_user_by_email(user_data['email'])
             if user_with_email and user_with_email.id != user_id:
                 return {'error': 'Email already registered'}, 400
         
-        # Update the user
-        updated_user = facade.update_user(user_id, user_data)
-        if updated_user:
-            return {
-                'id': updated_user.id,
-                'first_name': updated_user.first_name,
-                'last_name': updated_user.last_name,
-                'email': updated_user.email
-            }, 200
-        else:
-            return {'error': 'User not found'}, 404
+        try:
+            updated_user = facade.update_user(user_id, user_data)
+            if updated_user:
+                return {
+                    'id': updated_user.id,
+                    'first_name': updated_user.first_name,
+                    'last_name': updated_user.last_name,
+                    'email': updated_user.email
+                }, 200
+            else:
+                return {'error': 'User not found'}, 404
+        except ValueError as e:
+            return {'error': str(e)}, 400
+        except Exception as e:
+            return {'error': f'Internal server error: {str(e)}'}, 500
