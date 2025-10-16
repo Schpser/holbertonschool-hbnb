@@ -25,6 +25,13 @@ place_model = place_namespace.model('Place', {
     'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
 })
 
+review_model = place_namespace.model('PlaceReview', {
+    'id': fields.String(description='Review ID'),
+    'text': fields.String(description='Text of the review'),
+    'rating': fields.Integer(description='Rating of the place (1-5)'),
+    'user_id': fields.String(description='ID of the user')
+})
+
 place_response_model = place_namespace.model('PlaceResponse', {
     'id': fields.String(description='Place ID'),
     'title': fields.String(description='Title of the place'),
@@ -34,7 +41,8 @@ place_response_model = place_namespace.model('PlaceResponse', {
     'longitude': fields.Float(description='Longitude of the place'),
     'owner_id': fields.String(description='ID of the owner'),
     'owner': fields.Nested(user_model, description='Owner details'),
-    'amenities': fields.List(fields.Nested(amenity_model), description='List of amenities')
+    'amenities': fields.List(fields.Nested(amenity_model), description='List of amenities'),
+    'reviews': fields.List(fields.Nested(review_model), description='List of reviews')
 })
 
 place_list_model = place_namespace.model('PlaceList', {
@@ -91,13 +99,22 @@ class PlaceResource(Resource):
             if not place:
                 return {'error': 'Place not found'}, 404
 
-            # CORRECTION ICI : place.owner au lieu de place.user
             owner = place.owner
+
             amenities_data = []
             for amenity in place.amenities:
                 amenities_data.append({
                     'id': amenity.id,
                     'name': amenity.name
+                })
+
+            reviews_data = []
+            for review in place.reviews:
+                reviews_data.append({
+                    'id': review.id,
+                    'text': review.text,
+                    'rating': review.rating,
+                    'user_id': review.user.id
                 })
             
             response = {
@@ -114,7 +131,8 @@ class PlaceResource(Resource):
                     'last_name': owner.last_name,
                     'email': owner.email
                 },
-                'amenities': amenities_data
+                'amenities': amenities_data,
+                'reviews': reviews_data
             }
             return response, 200
         except Exception as e:

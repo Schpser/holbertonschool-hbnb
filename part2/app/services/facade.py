@@ -9,6 +9,7 @@ class HBnBFacade:
         self.user_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
         self.place_repo = InMemoryRepository()
+        self.review_repo = InMemoryRepository()
 
     def create_user(self, user_data):
         user = User(**user_data)
@@ -120,3 +121,75 @@ class HBnBFacade:
         updated_data = {k: v for k, v in place_data.items() if k != 'owner_id'}
         place.update(updated_data)
         return place
+    
+    def create_review(self, review_data):
+        user_id = review_data.get('user_id')
+        user = self.user_repo.get(user_id)
+        if not user:
+            raise ValueError("User not found")
+
+        place_id = review_data.get('place_id')
+        place = self.place_repo.get(place_id)
+        if not place:
+            raise ValueError("Place not found")
+
+        review_kwargs = {
+            'text': review_data.get('text'),
+            'rating': review_data.get('rating'),
+            'user': user,
+            'place': place
+        }
+
+        review = Review(**review_kwargs)
+        self.review_repo.add(review)
+        place.add_review(review)
+
+        return review
+
+    def get_review(self, review_id):
+        return self.review_repo.get(review_id)
+
+    def get_all_reviews(self):
+        return self.review_repo.get_all()
+
+    def get_reviews_by_place(self, place_id):
+        place = self.place_repo.get(place_id)
+        if not place:
+            raise ValueError("Place not found")
+        return place.reviews
+
+    def update_review(self, review_id, review_data):
+        review = self.review_repo.get(review_id)
+        if not review:
+            raise ValueError(f"Review with ID {review_id} not found")
+
+        if 'user_id' in review_data:
+            user_id = review_data['user_id']
+            user = self.user_repo.get(user_id)
+            if not user:
+                raise ValueError("User not found")
+            review.user = user
+            review_data.pop('user_id')
+
+        if 'place_id' in review_data:
+            place_id = review_data['place_id']
+            place = self.place_repo.get(place_id)
+            if not place:
+                raise ValueError("Place not found")
+            review.place = place
+            review_data.pop('place_id')
+
+        review.update(review_data)
+        return review
+
+    def delete_review(self, review_id):
+        review = self.review_repo.get(review_id)
+        if not review:
+            raise ValueError(f"Review with ID {review_id} not found")
+
+        if review.place and review in review.place.reviews:
+            review.place.reviews.remove(review)
+
+        self.review_repo.delete(review_id)
+        return True
+    
