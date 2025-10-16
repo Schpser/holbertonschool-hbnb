@@ -39,7 +39,18 @@ class InMemoryRepository:
     def get_all(self):
         """Get all entities"""
         return list(self._storage.values())
-    
+
+    def update(self, obj_id, data):
+        obj = self.get(obj_id)
+        if obj:
+            obj.update(data)
+            return obj
+        return None
+
+    def delete(self, obj_id):
+        if obj_id in self._storage:
+            del self._storage[obj_id]
+
     def get_by_attribute(self, attr_name, attr_value):
         for entity in self._storage.values():
             if hasattr(entity, attr_name) and getattr(entity, attr_name) == attr_value:

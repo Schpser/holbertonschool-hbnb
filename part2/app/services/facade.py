@@ -1,5 +1,8 @@
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
+from app.models.place import Place
+from app.models.review import Review
+from app.models.amenity import Amenity
 
 class HBnBFacade:
     def __init__(self):
@@ -11,26 +14,27 @@ class HBnBFacade:
         return user
 
     def get_user(self, user_id):
-        return self.user_repo.get(user_id)
+        print(f"DEBUG: Recherche user_id: '{user_id}'")
+        print(f"DEBUG: IDs disponibles: {list(self.user_repo._storage.keys())}")
+        result = self.user_repo.get(user_id)
+        print(f"DEBUG: Utilisateur trouvé: {result}")
+        return result
 
     def get_user_by_email(self, email):
         return self.user_repo.get_by_attribute('email', email)
     
     def get_all_users(self):
-        """Get all users"""
-        return self.user_repo.get_all()
+        if hasattr(self.user_repo, 'get_all'):
+            return self.user_repo.get_all()
+        return []
     
-    def update_user(self, user_id, user_data):
-        """Update a user"""
-        user = self.get_user(user_id)
-        if not user:
-            return None
-
-        if 'first_name' in user_data:
-            user.first_name = user_data['first_name']
-        if 'last_name' in user_data:
-            user.last_name = user_data['last_name']
-        if 'email' in user_data:
-            user.email = user_data['email']
-
+    def update_user(self, user_id, data):
+        print(f"DEBUG: Mise à jour user_id: '{user_id}' avec data: {data}")
+        result = self.user_repo.update(user_id, data)
+        print(f"DEBUG: Résultat update: {result}")
+        user = self.user_repo.get(user_id)
+        print(f"DEBUG: Utilisateur après update: {user}")
         return user
+
+    def delete_user(self, user_id):
+        self.user_repo.delete(user_id)
