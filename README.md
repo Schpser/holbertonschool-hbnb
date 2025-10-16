@@ -2,18 +2,12 @@
 
 ## HBnB - Part 1: Architecture & Documentation 🏗️
 
-### Table of Contents
-
     0. High-Level Package Diagram
     1. Detailed Class Diagram for Business Logic Layer
     2. Sequence Diagrams for API Calls
     3. Documentation Compilation
 
-### Upcoming Parts 🚀
-
 __Part 2__ - Business Logic & API ⚙️
-
-### Table of Contents
 
     0. Project Setup and Package Initialization
     1. Core Business Logic Classes
@@ -22,6 +16,9 @@ __Part 2__ - Business Logic & API ⚙️
     4. Place Endpoints
     5. Review Endpoints 
     6. Testing and Validation
+
+### Upcoming Parts 🚀
+
 
 __Part 3__ - Authentication & Database 🔐
 Authentication system and data persistence
