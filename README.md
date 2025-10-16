@@ -1,13 +1,13 @@
 # HBnB Project - Holberton School
 
-## HBnB - Part 1: Architecture & Documentation 🏗️
+## __Part 1__: Architecture & Documentation 🏗️
 
     0. High-Level Package Diagram
     1. Detailed Class Diagram for Business Logic Layer
     2. Sequence Diagrams for API Calls
     3. Documentation Compilation
 
-__Part 2__ - Business Logic & API ⚙️
+## __Part 2__ - Business Logic & API ⚙️
 
     0. Project Setup and Package Initialization
     1. Core Business Logic Classes
