@@ -293,7 +293,7 @@ This project is part of the Holberton School curriculum.
 
 ## 👥 Authors
 
-[Your Name] - Initial work
+Rpok & Schps
 
 ## 🙏 Acknowledgments
 
