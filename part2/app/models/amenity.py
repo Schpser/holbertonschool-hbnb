@@ -10,3 +10,9 @@ class Amenity(BaseModel):
             raise ValueError("name must be at most 50 characters")
 
         self.name = name
+        
+    def update(self, data):
+            """Update amenity attributes"""
+            for key, value in data.items():
+                if hasattr(self, key):
+                    setattr(self, key, value)

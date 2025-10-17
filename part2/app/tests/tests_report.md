@@ -1,4 +1,4 @@
-git checkout# 📊 HBnB API Testing Report
+# 📊 HBnB API Testing Report
 
 ## ✅ Successful Tests
 

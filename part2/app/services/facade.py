@@ -1,9 +1,15 @@
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
+from app.models.place import Place
+from app.models.review import Review
+from app.models.amenity import Amenity
 
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
+        self.amenity_repo = InMemoryRepository()
+        self.place_repo = InMemoryRepository()
+        self.review_repo = InMemoryRepository()
 
     def create_user(self, user_data):
         user = User(**user_data)
@@ -14,9 +20,6 @@ class HBnBFacade:
         return self.user_repo.get(user_id)
 
     def get_user_by_email(self, email):
-<<<<<<< main
-        return self.user_repo.get_by_attribute('email', email)
-=======
         return self.user_repo.get_by_attribute('email', email)
     
     def get_all_users(self):
@@ -53,27 +56,29 @@ class HBnBFacade:
         return None
 
     def create_place(self, place_data):
-        owner_id = place_data.pop('owner_id', None)
+        owner_id = place_data.get('owner_id')
         owner = self.user_repo.get(owner_id)
         if not owner:
             raise ValueError("Owner not found")
 
         amenities_ids = place_data.pop('amenities', [])
         
-        # Create place with explicit parameters to match constructor signature
-        place = Place(
-            title=place_data.get('title'),
-            description=place_data.get('description'),
-            price=place_data.get('price'),
-            latitude=place_data.get('latitude'),
-            longitude=place_data.get('longitude'),
-            owner=owner
-        )
+        place_kwargs = {
+            'title': place_data.get('title'),
+            'description': place_data.get('description', ''),
+            'price': place_data.get('price'),
+            'latitude': place_data.get('latitude'),
+            'longitude': place_data.get('longitude'),
+            'owner': owner
+        }
+
+        place = Place(**place_kwargs)
         self.place_repo.add(place)
-        
+
         for amenity_id in amenities_ids:
             amenity = self.amenity_repo.get(amenity_id)
             if not amenity:
+                self.place_repo.delete(place.id)
                 raise ValueError(f"Amenity with ID {amenity_id} not found")
             place.add_amenity(amenity)
 
@@ -90,16 +95,17 @@ class HBnBFacade:
         if not place:
             raise ValueError(f"Place with ID {place_id} not found")
 
+        # Handle owner update
         if 'owner_id' in place_data:
             owner_id = place_data['owner_id']
             owner = self.user_repo.get(owner_id)
             if not owner:
                 raise ValueError("Owner not found")
-
             place.owner = owner
 
+        # Handle amenities update
         if 'amenities' in place_data:
-            amenities_ids = place_data.pop('amenities')
+            amenities_ids = place_data.get('amenities', [])
             place.amenities = []
 
             for amenity_id in amenities_ids:
@@ -108,7 +114,8 @@ class HBnBFacade:
                     raise ValueError(f"Amenity with ID {amenity_id} not found")
                 place.add_amenity(amenity)
 
-        updated_data = {k: v for k, v in place_data.items() if k != 'owner_id'}
+        # Update other fields (excluding owner_id and amenities)
+        updated_data = {k: v for k, v in place_data.items() if k not in ['owner_id', 'amenities']}
         place.update(updated_data)
         return place
     
@@ -183,4 +190,3 @@ class HBnBFacade:
         self.review_repo.delete(review_id)
         return True
     
->>>>>>> local

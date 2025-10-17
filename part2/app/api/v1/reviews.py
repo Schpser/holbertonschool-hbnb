@@ -1,5 +1,3 @@
-<<<<<<< main
-=======
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 
@@ -12,11 +10,12 @@ review_model = review_namespace.model('Review', {
     'place_id': fields.String(required=True, description='ID of the place')
 })
 
+# Define a model for partial review updates (all fields optional)
 review_update_model = review_namespace.model('ReviewUpdate', {
-    'text': fields.String(description='Text of the review'),
-    'rating': fields.Integer(description='Rating of the place (1-5)'),
-    'user_id': fields.String(description='ID of the user'),
-    'place_id': fields.String(description='ID of the place')
+    'text': fields.String(required=False, description='Text of the review'),
+    'rating': fields.Integer(required=False, description='Rating of the place (1-5)'),
+    'user_id': fields.String(required=False, description='ID of the user'),
+    'place_id': fields.String(required=False, description='ID of the place')
 })
 
 review_response_model = review_namespace.model('ReviewResponse', {
@@ -139,4 +138,3 @@ class PlaceReviewList(Resource):
             return {'error': str(e)}, 404
         except Exception as e:
             return {'error': f'Internal server error: {str(e)}'}, 500
->>>>>>> local

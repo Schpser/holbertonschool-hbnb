@@ -1,5 +1,3 @@
-<<<<<<< main
-=======
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 
@@ -27,14 +25,15 @@ place_model = place_namespace.model('Place', {
     'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
 })
 
+# Define a model for partial place updates (all fields optional)
 place_update_model = place_namespace.model('PlaceUpdate', {
-    'title': fields.String(description='Title of the place'),
-    'description': fields.String(description='Description of the place'),
-    'price': fields.Float(description='Price per night'),
-    'latitude': fields.Float(description='Latitude of the place'),
-    'longitude': fields.Float(description='Longitude of the place'),
-    'owner_id': fields.String(description='ID of the owner'),
-    'amenities': fields.List(fields.String, description="List of amenities ID's")
+    'title': fields.String(required=False, description='Title of the place'),
+    'description': fields.String(required=False, description='Description of the place'),
+    'price': fields.Float(required=False, description='Price per night'),
+    'latitude': fields.Float(required=False, description='Latitude of the place'),
+    'longitude': fields.Float(required=False, description='Longitude of the place'),
+    'owner_id': fields.String(required=False, description='ID of the owner'),
+    'amenities': fields.List(fields.String, required=False, description="List of amenities ID's")
 })
 
 review_model = place_namespace.model('PlaceReview', {
@@ -172,6 +171,7 @@ class PlaceResource(Resource):
         except Exception as e:
             return {'error': f'Internal server error: {str(e)}'}, 500
 
+
 @place_namespace.route('/<place_id>/reviews')
 class PlaceReviews(Resource):
     @place_namespace.response(200, 'List of reviews for the place retrieved successfully')
@@ -190,4 +190,3 @@ class PlaceReviews(Resource):
             return {'error': str(e)}, 404
         except Exception as e:
             return {'error': f'Internal server error: {str(e)}'}, 500
->>>>>>> local
