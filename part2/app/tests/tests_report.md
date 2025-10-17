@@ -1,160 +1,111 @@
-# 📊 HBnB API Testing Report
+# Test Report
 
-## ✅ Successful Tests
+This report summarizes the results of the black-box testing performed on the HBNB API.
 
-### 1. API Endpoints Tests
+## Summary
 
-```http
-# ✅ POST /api/v1/users/
-# 201 Created - User creation with valid data
-POST /api/v1/users/
-Content-Type: application/json
+| Endpoint                 | Create (POST) | Read All (GET) | Read One (GET) | Update (PUT) | Delete (DELETE) |
+| ------------------------ | :-----------: | :------------: | :------------: | :----------: | :-------------: |
+| **/users**               |     ✅ Pass     |      ✅ Pass     |      ✅ Pass     |    ✅ Pass     |       N/A       |
+| **/amenities**           |     ✅ Pass     |      ✅ Pass     |      ✅ Pass     |    ✅ Pass     |       N/A       |
+| **/places**              |     ✅ Pass     |      ✅ Pass     |      ✅ Pass     |    ✅ Pass     |       N/A       |
+| **/reviews**             |     ✅ Pass     |      ✅ Pass     |      ✅ Pass     |    ✅ Pass     |     ✅ Pass     |
+| **/places/{id}/reviews** |      N/A      |      ✅ Pass     |      N/A       |      N/A     |       N/A       |
 
-{
-  "first_name": "John",
-  "last_name": "Doe",
-  "email": "john@example.com"
-}
+---
 
-# ✅ POST /api/v1/users/  
-# 400 Bad Request - Invalid email validation
-POST /api/v1/users/
-Content-Type: application/json
+## Detailed Test Cases
 
-{
-  "first_name": "John",
-  "last_name": "Doe",
-  "email": "invalid-email"
-}
+### Users API (`/api/v1/users`)
 
-# ✅ POST /api/v1/users/
-# 400 Bad Request - Required fields validation  
-POST /api/v1/users/
-Content-Type: application/json
+-   **POST /users**: `✅ SUCCESS`
+    -   **Request**: `{"first_name": "John", "last_name": "Doe", "email": "john.doe@example.com"}`
+    -   **Expected**: `201 Created`
+    -   **Result**: Passed.
 
-{
-  "first_name": "",
-  "last_name": "Doe",
-  "email": "test@example.com"
-}
+-   **GET /users**: `✅ SUCCESS`
+    -   **Expected**: `200 OK`
+    -   **Result**: Passed.
 
-# ✅ GET /api/v1/users/{id}
-# 404 Not Found - Retrieval of non-existent user
-GET /api/v1/users/non-existent-id
+-   **GET /users/{user_id}**: `✅ SUCCESS`
+    -   **Expected**: `200 OK`
+    -   **Result**: Passed.
 
-# ✅ GET /api/v1/users/
-# 200 OK - Retrieval of all users
-GET /api/v1/users/
+-   **PUT /users/{user_id}**: `✅ SUCCESS`
+    -   **Request**: `{"first_name": "Jane"}`
+    -   **Expected**: `200 OK`
+    -   **Result**: Passed.
 
-# ✅ POST /api/v1/places/
-# 201 Created - Place creation with relationships
-POST /api/v1/places/
-Content-Type: application/json
+### Amenities API (`/api/v1/amenities`)
 
-{
-  "title": "Cozy Apartment",
-  "description": "A nice place",
-  "price": 100.0,
-  "latitude": 37.7749,
-  "longitude": -122.4194,
-  "owner_id": "user-uuid",
-  "amenities": ["amenity-uuid"]
-}
+-   **POST /amenities**: `✅ SUCCESS`
+    -   **Request**: `{"name": "WiFi"}`
+    -   **Expected**: `201 Created`
+    -   **Result**: Passed.
 
-# ✅ POST /api/v1/places/
-# 400 Bad Request - Invalid price validation
-POST /api/v1/places/
-Content-Type: application/json
+-   **GET /amenities**: `✅ SUCCESS`
+    -   **Expected**: `200 OK`
+    -   **Result**: Passed.
 
-{
-  "title": "Invalid Place",
-  "price": -100.0,
-  "latitude": 37.7749,
-  "longitude": -122.4194,
-  "owner_id": "user-uuid",
-  "amenities": []
-}
+-   **GET /amenities/{amenity_id}**: `✅ SUCCESS`
+    -   **Expected**: `200 OK`
+    -   **Result**: Passed.
 
-# ✅ POST /api/v1/amenities/
-# 201 Created - Amenity creation
-POST /api/v1/amenities/
-Content-Type: application/json
+-   **PUT /amenities/{amenity_id}**: `✅ SUCCESS`
+    -   **Request**: `{"name": "High-Speed WiFi"}`
+    -   **Expected**: `200 OK`
+    -   **Result**: Passed.
 
-{
-  "name": "Wi-Fi"
-}
+### Places API (`/api/v1/places`)
 
-# ✅ POST /api/v1/reviews/
-# 201 Created - Review creation
-POST /api/v1/reviews/
-Content-Type: application/json
+-   **POST /places**: `✅ SUCCESS`
+    -   **Request**: `{"title": "Cozy Apartment", "owner_id": "...", "amenities": []}`
+    -   **Expected**: `201 Created`
+    -   **Result**: Passed.
 
-{
-  "text": "Great place!",
-  "rating": 5,
-  "user_id": "user-uuid",
-  "place_id": "place-uuid"
-}
+-   **GET /places**: `✅ SUCCESS`
+    -   **Expected**: `200 OK`
+    -   **Result**: Passed.
 
-# ✅ DELETE /api/v1/reviews/{id}
-# 200 OK - Review deletion
-DELETE /api/v1/reviews/review-uuid
-```
+-   **GET /places/{place_id}**: `✅ SUCCESS`
+    -   **Expected**: `200 OK`
+    -   **Result**: Passed.
 
-# ✅ Complete User → Place → Review flow
-# User creation
-POST /api/v1/users/
-{"first_name": "Alice", "last_name": "Smith", "email": "alice@example.com"}
+-   **PUT /places/{place_id}**: `✅ SUCCESS`
+    -   **Request**: `{"price": 250}`
+    -   **Expected**: `200 OK`
+    -   **Result**: Passed.
 
-# Place creation  
-POST /api/v1/places/
-{"title": "Luxury Villa", "price": 200.0, "latitude": 48.8566, "longitude": 2.3522, "owner_id": "user-uuid", "amenities": []}
+### Reviews API (`/api/v1/reviews`)
 
-# Review creation
-POST /api/v1/reviews/
-{"text": "Amazing stay!", "rating": 5, "user_id": "user-uuid", "place_id": "place-uuid"}
+-   **POST /reviews**: `✅ SUCCESS`
+    -   **Request**: `{"text": "Great stay!", "user_id": "...", "place_id": "..."}`
+    -   **Expected**: `201 Created`
+    -   **Result**: Passed.
 
-# ✅ Entity relationship management
-GET /api/v1/places/place-uuid
-# Returns place with owner details and reviews
+-   **GET /reviews**: `✅ SUCCESS`
+    -   **Expected**: `200 OK`
+    -   **Result**: Passed.
 
-✅ Correct HTTP status codes
-200 OK - Successful requests
-201 Created - Resource created
-400 Bad Request - Validation errors
-404 Not Found - Resource not found
-500 Internal Server Error - Server errors
+-   **GET /reviews/{review_id}**: `✅ SUCCESS`
+    -   **Expected**: `200 OK`
+    -   **Result**: Passed.
 
-✅ Email format validation
-POST /api/v1/users/
-{"email": "invalid-email"} → 400 Bad Request
+-   **PUT /reviews/{review_id}**: `✅ SUCCESS`
+    -   **Request**: `{"text": "An amazing experience!"}`
+    -   **Expected**: `200 OK`
+    -   **Result**: Passed.
 
-✅ Positive price required  
-POST /api/v1/places/
-{"price": -100.0} → 400 Bad Request
+-   **DELETE /reviews/{review_id}**: `✅ SUCCESS`
+    -   **Expected**: `200 OK`
+    -   **Result**: Passed.
 
-✅ Latitude/Longitude within valid ranges
-POST /api/v1/places/
-{"latitude": 100.0} → 400 Bad Request
-{"longitude": 200.0} → 400 Bad Request
+### Place Reviews API (`/api/v1/places/{place_id}/reviews`)
 
-✅ Ratings between 1 and 5
-POST /api/v1/reviews/
-{"rating": 6} → 400 Bad Request
+-   **GET /places/{place_id}/reviews**: `✅ SUCCESS`
+    -   **Expected**: `200 OK`
+    -   **Result**: Passed.
 
-✅ Required fields not empty
-POST /api/v1/amenities/
-{"name": ""} → 400 Bad Request
+---
 
-## 🎯 Feature Coverage
-
-```
-Feature	Status	Tests
-Users CRUD	✅	5 tests
-Places CRUD	✅	2 tests
-Amenities CRUD	✅	2 tests
-Reviews CRUD	✅	3 tests
-Validation	✅	8 tests
-Relations	✅	4 tests
-Error Handling	✅	6 tests
-```
+**Conclusion**: All API endpoints are functioning as expected. All tests passed successfully.
