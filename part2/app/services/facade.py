@@ -17,11 +17,7 @@ class HBnBFacade:
         return user
 
     def get_user(self, user_id):
-        print(f"DEBUG: Research user_id: '{user_id}'")
-        print(f"DEBUG: IDs available: {list(self.user_repo._storage.keys())}")
-        result = self.user_repo.get(user_id)
-        print(f"DEBUG: User found: {result}")
-        return result
+        return self.user_repo.get(user_id)
 
     def get_user_by_email(self, email):
         return self.user_repo.get_by_attribute('email', email)
@@ -32,12 +28,11 @@ class HBnBFacade:
         return []
     
     def update_user(self, user_id, data):
-        print(f"DEBUG: Update user_id: '{user_id}' with data: {data}")
-        result = self.user_repo.update(user_id, data)
-        print(f"DEBUG: Update result: {result}")
         user = self.user_repo.get(user_id)
-        print(f"DEBUG: Uptdated User: {user}")
-        return user
+        if user:
+            user.update(data)
+            return user
+        return None
 
     def delete_user(self, user_id):
         self.user_repo.delete(user_id)
@@ -100,16 +95,17 @@ class HBnBFacade:
         if not place:
             raise ValueError(f"Place with ID {place_id} not found")
 
+        # Handle owner update
         if 'owner_id' in place_data:
             owner_id = place_data['owner_id']
             owner = self.user_repo.get(owner_id)
             if not owner:
                 raise ValueError("Owner not found")
-
             place.owner = owner
 
+        # Handle amenities update
         if 'amenities' in place_data:
-            amenities_ids = place_data.pop('amenities')
+            amenities_ids = place_data.get('amenities', [])
             place.amenities = []
 
             for amenity_id in amenities_ids:
@@ -118,7 +114,8 @@ class HBnBFacade:
                     raise ValueError(f"Amenity with ID {amenity_id} not found")
                 place.add_amenity(amenity)
 
-        updated_data = {k: v for k, v in place_data.items() if k != 'owner_id'}
+        # Update other fields (excluding owner_id and amenities)
+        updated_data = {k: v for k, v in place_data.items() if k not in ['owner_id', 'amenities']}
         place.update(updated_data)
         return place
     

@@ -10,6 +10,14 @@ review_model = review_namespace.model('Review', {
     'place_id': fields.String(required=True, description='ID of the place')
 })
 
+# Define a model for partial review updates (all fields optional)
+review_update_model = review_namespace.model('ReviewUpdate', {
+    'text': fields.String(required=False, description='Text of the review'),
+    'rating': fields.Integer(required=False, description='Rating of the place (1-5)'),
+    'user_id': fields.String(required=False, description='ID of the user'),
+    'place_id': fields.String(required=False, description='ID of the place')
+})
+
 review_response_model = review_namespace.model('ReviewResponse', {
     'id': fields.String(description='Review ID'),
     'text': fields.String(description='Text of the review'),
@@ -74,7 +82,7 @@ class ReviewResource(Resource):
         except Exception as e:
             return {'error': f'Internal server error: {str(e)}'}, 500
 
-    @review_namespace.expect(review_model, validate=True)
+    @review_namespace.expect(review_update_model, validate=True)
     @review_namespace.response(200, 'Review updated successfully')
     @review_namespace.response(404, 'Review not found')
     @review_namespace.response(400, 'Invalid input data')

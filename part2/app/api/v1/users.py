@@ -10,6 +10,13 @@ user_model = user_namespace.model('User', {
     'email': fields.String(required=True, description='Email of the user')
 })
 
+# Define a model for partial user updates (all fields optional)
+user_update_model = user_namespace.model('UserUpdate', {
+    'first_name': fields.String(required=False, description='First name of the user'),
+    'last_name': fields.String(required=False, description='Last name of the user'),
+    'email': fields.String(required=False, description='Email of the user')
+})
+
 @user_namespace.route('/')
 class UserList(Resource):
     @user_namespace.expect(user_model, validate=True)
@@ -63,7 +70,7 @@ class UserResource(Resource):
             'email': user.email
         }, 200
 
-    @user_namespace.expect(user_model, validate=True)
+    @user_namespace.expect(user_update_model, validate=True)
     @user_namespace.response(200, 'User successfully updated')
     @user_namespace.response(404, 'User not found')
     @user_namespace.response(400, 'Email already registered')

@@ -25,6 +25,17 @@ place_model = place_namespace.model('Place', {
     'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
 })
 
+# Define a model for partial place updates (all fields optional)
+place_update_model = place_namespace.model('PlaceUpdate', {
+    'title': fields.String(required=False, description='Title of the place'),
+    'description': fields.String(required=False, description='Description of the place'),
+    'price': fields.Float(required=False, description='Price per night'),
+    'latitude': fields.Float(required=False, description='Latitude of the place'),
+    'longitude': fields.Float(required=False, description='Longitude of the place'),
+    'owner_id': fields.String(required=False, description='ID of the owner'),
+    'amenities': fields.List(fields.String, required=False, description="List of amenities ID's")
+})
+
 review_model = place_namespace.model('PlaceReview', {
     'id': fields.String(description='Review ID'),
     'text': fields.String(description='Text of the review'),
@@ -138,7 +149,7 @@ class PlaceResource(Resource):
         except Exception as e:
             return {'error': f'Internal server error: {str(e)}'}, 500
 
-    @place_namespace.expect(place_model, validate=True)
+    @place_namespace.expect(place_update_model, validate=True)
     @place_namespace.response(200, 'Place updated successfully')
     @place_namespace.response(404, 'Place not found')
     @place_namespace.response(400, 'Invalid input data')
@@ -157,5 +168,25 @@ class PlaceResource(Resource):
                 return {'error': str(e)}, 404
             else:
                 return {'error': str(e)}, 400
+        except Exception as e:
+            return {'error': f'Internal server error: {str(e)}'}, 500
+
+
+@place_namespace.route('/<place_id>/reviews')
+class PlaceReviews(Resource):
+    @place_namespace.response(200, 'List of reviews for the place retrieved successfully')
+    @place_namespace.response(404, 'Place not found')
+    def get(self, place_id):
+        """Get all reviews for a specific place"""
+        try:
+            reviews = facade.get_reviews_by_place(place_id)
+            return [{
+                'id': review.id,
+                'text': review.text,
+                'rating': review.rating,
+                'user_id': review.user.id
+            } for review in reviews], 200
+        except ValueError as e:
+            return {'error': str(e)}, 404
         except Exception as e:
             return {'error': f'Internal server error: {str(e)}'}, 500
