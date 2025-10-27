@@ -1,4 +1,4 @@
-<p align="center"> <img src="https://github.com/Schpser/holbertonschool-hbnb/blob/main/git" >
+<p align="center"> <img src="https://github.com/Schpser/holbertonschool-hbnb/blob/main/Banner.jpg" >
 </a></p>
 
 # HBnB Project - Holberton School
