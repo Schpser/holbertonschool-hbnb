@@ -1,3 +1,6 @@
+<p align="center"> <img src="https://github.com/Schpser/holbertonschool-hbnb/blob/main/git" >
+</a></p>
+
 # HBnB Project - Holberton School
 
 ## __Part 1__: Architecture & Documentation 🏗️
