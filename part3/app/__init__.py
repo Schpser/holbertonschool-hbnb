@@ -5,8 +5,9 @@ from app.api.v1.amenities import amenity_namespace
 from app.api.v1.places import place_namespace
 from app.api.v1.reviews import review_namespace
 
-def create_app():
+def create_app(config_class="config.DevelopmentConfig"):
     app = Flask(__name__)
+    app.config.from_object(config_class)
     api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API', doc='/api/v1/')
 
     api.add_namespace(users_ns, path='/api/v1/users')
