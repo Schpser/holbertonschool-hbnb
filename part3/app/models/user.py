@@ -1,5 +1,10 @@
+from flask_bcrypt import Bcrypt
+from flask_restx.api import current_app
 from app.models.base_model import BaseModel
 import re
+
+bcrypt = Bcrypt()
+
 class User(BaseModel):
     def __init__(self, first_name, last_name, email, is_admin=False):
         super().__init__()
@@ -30,3 +35,22 @@ class User(BaseModel):
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }
+    # Add 'Salting Method' with bcrypt :
+
+    def hash_password(self, password):
+        """Hashes the password before storing it."""
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def verify_password(self, password):
+        """Verifies if the provided password matches the hashed password."""
+        return bcrypt.check_password_hash(self.password, password)
+    
+    # Add 'Peppering Method' :
+    
+    def hash_password(self, password):
+        peppered_password = password + current_app.config['PEPPER']
+        self.password = bcrypt.generate_password_hash(peppered_password).decode('utf-8')
+
+    def verify_password(self, password):
+        peppered_password = password + current_app.config['PEPPER']  
+        return bcrypt.check_password_hash(self.password, peppered_password)
