@@ -10,6 +10,17 @@ class HBnBFacade:
         self.amenity_repo = InMemoryRepository()
         self.place_repo = InMemoryRepository()
         self.review_repo = InMemoryRepository()
+    
+    def update_user(self, user_id, data):
+        user = self.user_repo.get(user_id)
+        if user:
+            if 'password' in data:
+                password = data.pop('password')
+                user.hash_password(password)
+
+            user.update(data)
+            return user
+        return None
 
     def create_user(self, user_data):
         password = user_data.pop('password', None)
