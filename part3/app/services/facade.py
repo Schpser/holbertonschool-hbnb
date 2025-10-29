@@ -12,7 +12,10 @@ class HBnBFacade:
         self.review_repo = InMemoryRepository()
 
     def create_user(self, user_data):
+        password = user_data.pop('password', None)
         user = User(**user_data)
+        if password:
+            user.hash_password(password)
         self.user_repo.add(user)
         return user
 
