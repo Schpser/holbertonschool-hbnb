@@ -7,14 +7,16 @@ user_namespace = Namespace('users', description='User operations')
 user_model = user_namespace.model('User', {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
-    'email': fields.String(required=True, description='Email of the user')
+    'email': fields.String(required=True, description='Email of the user'),
+    'password': fields.String(required=True, description='Password of the user')
 })
 
 # Define a model for partial user updates (all fields optional)
 user_update_model = user_namespace.model('UserUpdate', {
     'first_name': fields.String(required=False, description='First name of the user'),
     'last_name': fields.String(required=False, description='Last name of the user'),
-    'email': fields.String(required=False, description='Email of the user')
+    'email': fields.String(required=False, description='Email of the user'),
+    'password': fields.String(required=False, description='Password of the user')
 })
 
 @user_namespace.route('/')
