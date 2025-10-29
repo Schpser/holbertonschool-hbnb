@@ -1,4 +1,5 @@
 from flask_restx import Namespace, Resource, fields
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services import facade
 
 user_namespace = Namespace('users', description='User operations')
@@ -58,8 +59,12 @@ class UserList(Resource):
 
 @user_namespace.route('/<string:user_id>')
 class UserResource(Resource):
-    @user_namespace.response(200, 'User details retrieved successfully')
+    @user_namespace.expect(user_update_model, validate=True)
+    @jwt_required()
+    @user_namespace.response(200, 'User successfully updated')
     @user_namespace.response(404, 'User not found')
+    @user_namespace.response(400, 'Email already registered')
+    
     def get(self, user_id):
         """Get user details by ID"""
         user = facade.get_user(user_id)
@@ -72,12 +77,13 @@ class UserResource(Resource):
             'email': user.email
         }, 200
 
-    @user_namespace.expect(user_update_model, validate=True)
-    @user_namespace.response(200, 'User successfully updated')
-    @user_namespace.response(404, 'User not found')
-    @user_namespace.response(400, 'Email already registered')
     def put(self, user_id):
         """Update a user"""
+        current_user_id = get_jwt_identity()
+
+        if current_user_id != user_id:
+            return {'error': 'You can only update your own profile'}, 403
+
         user_data = user_namespace.payload
 
         existing_user = facade.get_user(user_id)

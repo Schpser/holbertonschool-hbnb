@@ -1,4 +1,5 @@
 from flask_restx import Namespace, Resource, fields
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services import facade
 
 review_namespace = Namespace('reviews', description='Review operations')
@@ -6,7 +7,6 @@ review_namespace = Namespace('reviews', description='Review operations')
 review_model = review_namespace.model('Review', {
     'text': fields.String(required=True, description='Text of the review'),
     'rating': fields.Integer(required=True, description='Rating of the place (1-5)'),
-    'user_id': fields.String(required=True, description='ID of the user'),
     'place_id': fields.String(required=True, description='ID of the place')
 })
 
@@ -22,7 +22,7 @@ review_response_model = review_namespace.model('ReviewResponse', {
     'id': fields.String(description='Review ID'),
     'text': fields.String(description='Text of the review'),
     'rating': fields.Integer(description='Rating of the place (1-5)'),
-    'user_id': fields.String(description='ID of the user'),
+    'user_id': fields.String(required=False, description='ID of the user'),
     'place_id': fields.String(description='ID of the place')
 })
 
@@ -35,12 +35,20 @@ review_list_model = review_namespace.model('ReviewList', {
 @review_namespace.route('/')
 class ReviewList(Resource):
     @review_namespace.expect(review_model, validate=True)
+    @jwt_required()
     @review_namespace.response(201, 'Review successfully created')
     @review_namespace.response(400, 'Invalid input data')
     @review_namespace.response(404, 'User or place not found')
     def post(self):
         """Register a new review"""
+        current_user_id = get_jwt_identity()
+        
         review_data = review_namespace.payload
+        review_data['user_id'] = current_user_id
+        
+        place = facade.get_place(review_data['place_id'])
+        if place.owner.id == current_user_id:
+            return {'error': 'You cannot review your own place'}, 400
         
         try:
             new_review = facade.create_review(review_data)
@@ -69,6 +77,8 @@ class ReviewList(Resource):
 
 @review_namespace.route('/<review_id>')
 class ReviewResource(Resource):
+    @review_namespace.expect(review_update_model, validate=True)
+    @jwt_required()
     @review_namespace.response(200, 'Review details retrieved successfully')
     @review_namespace.response(404, 'Review not found')
     @review_namespace.marshal_with(review_response_model)
@@ -88,6 +98,15 @@ class ReviewResource(Resource):
     @review_namespace.response(400, 'Invalid input data')
     def put(self, review_id):
         """Update a review's information"""
+        current_user_id = get_jwt_identity()
+        
+        review = facade.get_review(review_id)
+        if not review:
+            return {'error': 'Review not found'}, 404
+            
+        if review.user.id != current_user_id:
+            return {'error': 'You can only update your own reviews'}, 403
+        
         review_data = review_namespace.payload
         
         try:

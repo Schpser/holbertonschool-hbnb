@@ -1,4 +1,5 @@
 from flask_restx import Namespace, Resource, fields
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services import facade
 
 place_namespace = Namespace('places', description='Place operations')
@@ -21,8 +22,7 @@ place_model = place_namespace.model('Place', {
     'price': fields.Float(required=True, description='Price per night'),
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
-    'owner_id': fields.String(required=True, description='ID of the owner'),
-    'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
+    'amenities': fields.List(fields.String, required=False, description="List of amenities ID's")
 })
 
 # Define a model for partial place updates (all fields optional)
@@ -66,12 +66,17 @@ place_list_model = place_namespace.model('PlaceList', {
 @place_namespace.route('/')
 class PlaceList(Resource):
     @place_namespace.expect(place_model, validate=True)
+    @jwt_required()
     @place_namespace.response(201, 'Place successfully created')
     @place_namespace.response(400, 'Invalid input data')
     @place_namespace.response(404, 'Owner or amenity not found')
     def post(self):
         """Register a new place"""
+        current_user_id = get_jwt_identity()
+
         place_data = place_namespace.payload
+        place_data['owner_id'] = current_user_id
+        place_data['amenities'] = place_data.get('amenities', [])
         
         try:
             new_place = facade.create_place(place_data)
@@ -101,8 +106,12 @@ class PlaceList(Resource):
 
 @place_namespace.route('/<place_id>')
 class PlaceResource(Resource):
+    @place_namespace.expect(place_update_model, validate=True)
+    @jwt_required()
     @place_namespace.response(200, 'Place details retrieved successfully')
     @place_namespace.response(404, 'Place not found')
+    @place_namespace.response(400, 'Invalid input data')
+
     def get(self, place_id):
         """Get place details by ID"""
         try:
@@ -149,12 +158,17 @@ class PlaceResource(Resource):
         except Exception as e:
             return {'error': f'Internal server error: {str(e)}'}, 500
 
-    @place_namespace.expect(place_update_model, validate=True)
-    @place_namespace.response(200, 'Place updated successfully')
-    @place_namespace.response(404, 'Place not found')
-    @place_namespace.response(400, 'Invalid input data')
     def put(self, place_id):
         """Update a place's information"""
+        current_user_id = get_jwt_identity()
+        
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+            
+        if place.owner.id != current_user_id:  # ← AJOUTE CETTE VÉRIFICATION
+            return {'error': 'You can only update your own places'}, 403
+        
         place_data = place_namespace.payload
         
         try:

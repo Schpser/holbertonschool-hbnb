@@ -51,7 +51,6 @@ class Place(BaseModel):
             'price': self.price,
             'latitude': self.latitude,
             'longitude': self.longitude,
-            'owner_id': self.owner.id,
             'amenities': [amenity.id for amenity in self.amenities],
             'created_at': self.created_at.isoformat() if hasattr(self, 'created_at') else None,
             'updated_at': self.updated_at.isoformat() if hasattr(self, 'updated_at') else None
