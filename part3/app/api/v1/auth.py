@@ -17,8 +17,11 @@ class Login(Resource):
         credentials = api.payload
         user = facade.get_user_by_email(credentials['email'])
 
-        if user and user.verify_password(credentials['password'], facade.PEPPER):
-            access_token = create_access_token(identity=str(user.id))
+        if user and user.verify_password(credentials['password']):
+            access_token = create_access_token(
+                identity=str(user.id),
+                additional_claims={"is_admin": user.is_admin}
+            )
             return {'access_token': access_token}, 200
         
         return {'error': 'Invalid credentials'}, 401
@@ -29,3 +32,34 @@ class ProtectedResource(Resource):
     def get(self):
         current_user = get_jwt_identity()
         return {'message': f'Hello, user {current_user}'}, 200
+
+@api.route('/init-admin')
+class InitAdmin(Resource):
+    def post(self):
+        """Create initial admin user (à utiliser une seule fois)"""
+        try:
+            # Vérifier si un admin existe déjà
+            existing_admin = facade.get_user_by_email("admin@hbnb.com")
+            if existing_admin:
+                return {'error': 'Admin user already exists'}, 400
+            
+            # Créer l'admin
+            admin_data = {
+                "first_name": "Super",
+                "last_name": "Admin", 
+                "email": "admin@hbnb.com",
+                "password": "admin123",
+                "is_admin": True
+            }
+            
+            admin = facade.create_user(admin_data)
+            return {
+                'message': 'Admin user created successfully',
+                'user': {
+                    'id': admin.id,
+                    'email': admin.email
+                }
+            }, 201
+            
+        except Exception as e:
+            return {'error': f'Failed to create admin: {str(e)}'}, 500

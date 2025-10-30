@@ -1,9 +1,7 @@
 from app.models.base_model import BaseModel
-from app.models.user import User
-from app.models.place import Place
 
 class Review(BaseModel):
-    def __init__(self, text, rating, place, user):
+    def __init__(self, text, rating, place_id, user_id):
         super().__init__()
 
         if not text or len(text.strip()) == 0:
@@ -12,15 +10,11 @@ class Review(BaseModel):
             raise ValueError("rating must be an integer")
         if rating < 1 or rating > 5:
             raise ValueError("rating must be between 1 and 5")
-        if not isinstance(place, Place):
-            raise ValueError("place must be a Place instance")
-        if not isinstance(user, User):
-            raise ValueError("user must be a User instance")
 
         self.text = text
         self.rating = rating
-        self.place = place
-        self.user = user
+        self.place_id = place_id
+        self.user_id = user_id
 
     def update(self, data):
         """Update review attributes with validation"""
@@ -42,8 +36,8 @@ class Review(BaseModel):
             'id': self.id,
             'text': self.text,
             'rating': self.rating,
-            'user_id': self.user.id,
-            'place_id': self.place.id,
+            'user_id': self.user_id,
+            'place_id': self.place_id,
             'created_at': self.created_at.isoformat() if hasattr(self, 'created_at') else None,
             'updated_at': self.updated_at.isoformat() if hasattr(self, 'updated_at') else None
         }

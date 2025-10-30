@@ -47,7 +47,7 @@ class ReviewList(Resource):
         review_data['user_id'] = current_user_id
         
         place = facade.get_place(review_data['place_id'])
-        if place.owner.id == current_user_id:
+        if place.owner_id == current_user_id:
             return {'error': 'You cannot review your own place'}, 400
         
         try:
@@ -104,7 +104,7 @@ class ReviewResource(Resource):
         if not review:
             return {'error': 'Review not found'}, 404
             
-        if review.user.id != current_user_id:
+        if review.user_id != current_user_id:
             return {'error': 'You can only update your own reviews'}, 403
         
         review_data = review_namespace.payload

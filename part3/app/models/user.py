@@ -1,5 +1,4 @@
 from flask_bcrypt import Bcrypt
-from flask_restx.api import current_app
 from app.models.base_model import BaseModel
 import re
 
@@ -25,22 +24,28 @@ class User(BaseModel):
         self.email = email
         self.is_admin = is_admin
         self.places = []
+        self.password = None
 
-    # Add 'Peppering Method' :
+        if password:
+            self.hash_password(password)
 
-    def hash_password(self, password, pepper):
+    def hash_password(self, password):
+        from flask import current_app
+        pepper = current_app.config.get('PEPPER', '')
         peppered_password = password + pepper
         self.password = bcrypt.generate_password_hash(peppered_password).decode('utf-8')
 
-    def verify_password(self, password, pepper):
+    def verify_password(self, password):
         if not self.password:
             return False
-
+            
+        from flask import current_app
+        pepper = current_app.config.get('PEPPER', '')
         peppered_password = password + pepper
         return bcrypt.check_password_hash(self.password, peppered_password)
 
     def to_dict(self):
-        return {
+        user_dict = {
             'id': self.id,
             'first_name': self.first_name,
             'last_name': self.last_name,
@@ -49,3 +54,4 @@ class User(BaseModel):
             'updated_at': self.updated_at.isoformat()
         }
 
+        return user_dict

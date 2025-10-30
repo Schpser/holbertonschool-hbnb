@@ -4,7 +4,6 @@ from app.services.facade import facade
 
 user_namespace = Namespace('users', description='User operations')
 
-# Define the user model for input validation and documentation
 user_model = user_namespace.model('User', {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
@@ -12,7 +11,6 @@ user_model = user_namespace.model('User', {
     'password': fields.String(required=True, description='Password of the user')
 })
 
-# Define a model for partial user updates (all fields optional)
 user_update_model = user_namespace.model('UserUpdate', {
     'first_name': fields.String(required=False, description='First name of the user'),
     'last_name': fields.String(required=False, description='Last name of the user'),
@@ -39,12 +37,17 @@ class UserList(Resource):
 
         user_data = user_namespace.payload
 
-        # Check if email already exists
         existing_user = facade.get_user_by_email(user_data['email'])
         if existing_user:
             return {'error': 'Email already registered'}, 400
+        
         try:
-            new_user = facade.create_user(user_data)
+            user_data_copy = user_data.copy()
+            password = user_data_copy.pop('password')
+            new_user = facade.create_user(user_data_copy)
+            new_user.hash_password(password)
+            facade.update_user(new_user.id, {'password': new_user.password})
+            
             return {
                 'id': new_user.id, 
                 'first_name': new_user.first_name, 
@@ -100,6 +103,10 @@ class UserResource(Resource):
             return {'error': 'Admin privileges required or you can only update your own profile'}, 403
 
         user_data = user_namespace.payload
+
+        if 'password' in user_data:
+            existing_user.hash_password(user_data['password'])
+            user_data['password'] = existing_user.password
 
         if 'email' in user_data and user_data['email'] != existing_user.email:
             user_with_email = facade.get_user_by_email(user_data['email'])

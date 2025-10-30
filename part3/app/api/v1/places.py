@@ -119,7 +119,9 @@ class PlaceResource(Resource):
             if not place:
                 return {'error': 'Place not found'}, 404
 
-            owner = place.owner
+            owner = facade.get_user(place.owner_id)
+            if not owner:
+                return {'error': 'Owner not found'}, 404
 
             amenities_data = []
             for amenity in place.amenities:
@@ -130,11 +132,12 @@ class PlaceResource(Resource):
 
             reviews_data = []
             for review in place.reviews:
+                review_user = facade.get_user(review.user_id)
                 reviews_data.append({
                     'id': review.id,
                     'text': review.text,
                     'rating': review.rating,
-                    'user_id': review.user.id
+                    'user_id': review_user.id if review_user else 'Unknown'
                 })
             
             response = {
@@ -144,20 +147,20 @@ class PlaceResource(Resource):
                 'price': place.price,
                 'latitude': place.latitude,
                 'longitude': place.longitude,
-                'owner_id': owner.id,
+                'owner_id': place.owner_id,
                 'owner': {
                     'id': owner.id,
                     'first_name': owner.first_name,
                     'last_name': owner.last_name,
                     'email': owner.email
-                },
+                } if owner else None,
                 'amenities': amenities_data,
                 'reviews': reviews_data
             }
             return response, 200
         except Exception as e:
             return {'error': f'Internal server error: {str(e)}'}, 500
-
+    
     def put(self, place_id):
         """Update a place's information"""
         current_user_id = get_jwt_identity()
@@ -166,7 +169,7 @@ class PlaceResource(Resource):
         if not place:
             return {'error': 'Place not found'}, 404
             
-        if place.owner.id != current_user_id:  # ← AJOUTE CETTE VÉRIFICATION
+        if place.owner_id != current_user_id:
             return {'error': 'You can only update your own places'}, 403
         
         place_data = place_namespace.payload
