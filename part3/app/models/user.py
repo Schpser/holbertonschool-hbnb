@@ -26,6 +26,19 @@ class User(BaseModel):
         self.is_admin = is_admin
         self.places = []
 
+    # Add 'Peppering Method' :
+
+    def hash_password(self, password, pepper):
+        peppered_password = password + pepper
+        self.password = bcrypt.generate_password_hash(peppered_password).decode('utf-8')
+
+    def verify_password(self, password, pepper):
+        if not self.password:
+            return False
+
+        peppered_password = password + pepper
+        return bcrypt.check_password_hash(self.password, peppered_password)
+
     def to_dict(self):
         return {
             'id': self.id,
@@ -35,13 +48,4 @@ class User(BaseModel):
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }
-    
-    # Add 'Peppering Method' :
 
-    def hash_password(self, password):
-        peppered_password = password + current_app.config['PEPPER']
-        self.password = bcrypt.generate_password_hash(peppered_password).decode('utf-8')
-
-    def verify_password(self, password):
-        peppered_password = password + current_app.config['PEPPER']  
-        return bcrypt.check_password_hash(self.password, peppered_password)

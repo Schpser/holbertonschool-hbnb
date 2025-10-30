@@ -1,6 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.services import facade
+from app.services.facade import facade
 
 user_namespace = Namespace('users', description='User operations')
 
@@ -23,11 +23,20 @@ user_update_model = user_namespace.model('UserUpdate', {
 @user_namespace.route('/')
 class UserList(Resource):
     @user_namespace.expect(user_model, validate=True)
+    @jwt_required()
     @user_namespace.response(201, 'User successfully created')
-    @user_namespace.response(400, 'Email already registered')
+    @user_namespace.response(400, 'Email already registered') 
     @user_namespace.response(400, 'Invalid input data')
+    @user_namespace.response(403, 'Admin privileges required')
     def post(self):
-        """Register a new user"""
+        """Register a new user (Admin only)"""
+        
+        current_user_id = get_jwt_identity()
+        current_user = facade.get_user(current_user_id)
+
+        if not current_user or not current_user.is_admin:
+            return {'error': 'Admin privileges required'}, 403
+
         user_data = user_namespace.payload
 
         # Check if email already exists
@@ -47,6 +56,7 @@ class UserList(Resource):
         except Exception as e:
             return {'error': f'Internal server error: {str(e)}'}, 500
     
+    @jwt_required()
     def get(self):
         """Get all users"""
         users = facade.get_all_users()
@@ -59,12 +69,7 @@ class UserList(Resource):
 
 @user_namespace.route('/<string:user_id>')
 class UserResource(Resource):
-    @user_namespace.expect(user_update_model, validate=True)
     @jwt_required()
-    @user_namespace.response(200, 'User successfully updated')
-    @user_namespace.response(404, 'User not found')
-    @user_namespace.response(400, 'Email already registered')
-    
     def get(self, user_id):
         """Get user details by ID"""
         user = facade.get_user(user_id)
@@ -77,19 +82,24 @@ class UserResource(Resource):
             'email': user.email
         }, 200
 
+    @user_namespace.expect(user_update_model, validate=True)
+    @jwt_required()
+    @user_namespace.response(200, 'User successfully updated')
+    @user_namespace.response(404, 'User not found')
+    @user_namespace.response(400, 'Email already registered')
     def put(self, user_id):
         """Update a user"""
         current_user_id = get_jwt_identity()
-
-        if current_user_id != user_id:
-            return {'error': 'You can only update your own profile'}, 403
-
-        user_data = user_namespace.payload
-
+        current_user = facade.get_user(current_user_id)
         existing_user = facade.get_user(user_id)
+
         if not existing_user:
             return {'error': 'User not found'}, 404
-        
+
+        if not current_user or (not current_user.is_admin and current_user_id != user_id):
+            return {'error': 'Admin privileges required or you can only update your own profile'}, 403
+
+        user_data = user_namespace.payload
 
         if 'email' in user_data and user_data['email'] != existing_user.email:
             user_with_email = facade.get_user_by_email(user_data['email'])
@@ -111,3 +121,17 @@ class UserResource(Resource):
             return {'error': str(e)}, 400
         except Exception as e:
             return {'error': f'Internal server error: {str(e)}'}, 500
+
+    @jwt_required()
+    def delete(self, user_id):
+        """Delete a user (Admin only)"""
+        current_user_id = get_jwt_identity()
+        current_user = facade.get_user(current_user_id)
+
+        if not current_user or not current_user.is_admin:
+            return {'error': 'Admin privileges required'}, 403
+
+        if facade.delete_user(user_id):
+            return '', 204
+        else:
+            return {'error': 'User not found'}, 404
