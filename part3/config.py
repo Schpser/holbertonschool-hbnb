@@ -7,8 +7,19 @@ class Config:
     DEBUG = False
     PEPPER = os.getenv('PEPPER', 'default_pepper_value')
 
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
 class DevelopmentConfig(Config):
     DEBUG = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///hbnb_dev.db'
+
+config = {
+    'development': DevelopmentConfig,
+    'default': DevelopmentConfig
+}
+
+class ProductionConfig(Config):
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
 
 config = {
     'development': DevelopmentConfig,

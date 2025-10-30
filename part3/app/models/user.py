@@ -1,13 +1,21 @@
-from flask_bcrypt import Bcrypt
-from app.models.base_model import BaseModel
+import uuid
+from datetime import datetime
+from app import db, bcrypt
 import re
 
-bcrypt = Bcrypt()
+class User(db.Model):
+    __tablename__ = 'users'
 
-class User(BaseModel):
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=True)
+    is_admin = db.Column(db.Boolean, default=False)
+
     def __init__(self, first_name, last_name, email, password=None, is_admin=False):
-        super().__init__()
-
         if len(first_name) == 0 or len(first_name) > 50:
             raise ValueError("first name must be between 1 and 50 characters")
         if len(last_name) == 0 or len(last_name) > 50:
@@ -23,8 +31,6 @@ class User(BaseModel):
         self.last_name = last_name
         self.email = email
         self.is_admin = is_admin
-        self.places = []
-        self.password = None
 
         if password:
             self.hash_password(password)
@@ -44,8 +50,12 @@ class User(BaseModel):
         peppered_password = password + pepper
         return bcrypt.check_password_hash(self.password, peppered_password)
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
     def to_dict(self):
-        user_dict = {
+        return {
             'id': self.id,
             'first_name': self.first_name,
             'last_name': self.last_name,
@@ -53,5 +63,3 @@ class User(BaseModel):
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }
-
-        return user_dict
