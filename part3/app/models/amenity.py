@@ -1,18 +1,23 @@
-from app.models.base_model import BaseModel
+from app import db
+from .base_model import BaseModel
+from sqlalchemy.orm import validates
 
 class Amenity(BaseModel):
-    def __init__(self, name):
-        super().__init__()
+    __tablename__ = 'amenities'
 
+    name = db.Column(db.String(255), nullable=False, unique=True)
+
+    @validates('name')
+    def validate_name(self, key, name):
         if not name or len(name.strip()) == 0:
-            raise ValueError("name is required")
-        if len(name) > 50:
-            raise ValueError("name must be at most 50 characters")
+            raise ValueError("Amenity name cannot be empty")
+        if len(name) > 255:
+            raise ValueError("Amenity name must be less than 255 characters")
+        return name.strip()
 
-        self.name = name
-        
-    def update(self, data):
-            """Update amenity attributes"""
-            for key, value in data.items():
-                if hasattr(self, key):
-                    setattr(self, key, value)
+    def to_dict(self):
+        base_dict = super().to_dict()
+        base_dict.update({
+            'name': self.name
+        })
+        return base_dict

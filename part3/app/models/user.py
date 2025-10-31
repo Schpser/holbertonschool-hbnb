@@ -1,19 +1,19 @@
-import uuid
-from datetime import datetime
-from app import db, bcrypt
+from app.models.base_model import BaseModel
 import re
 
-class User(db.Model):
+class User(BaseModel):
     __tablename__ = 'users'
 
-    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    from app import db
+    
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=True)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    password = db.Column(db.String(255), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+
+    places = db.relationship('Place', backref='owner', lazy=True, cascade='all, delete-orphan')
+    reviews = db.relationship('Review', backref='author', lazy=True, cascade='all, delete-orphan')
 
     def __init__(self, first_name, last_name, email, password=None, is_admin=False):
         if len(first_name) == 0 or len(first_name) > 50:
@@ -26,7 +26,7 @@ class User(db.Model):
             raise ValueError("email is required")
         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
             raise ValueError("invalid email format")
- 
+
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
@@ -36,23 +36,22 @@ class User(db.Model):
             self.hash_password(password)
 
     def hash_password(self, password):
+        """Hash the password before storing it."""
+        from app import bcrypt
         from flask import current_app
         pepper = current_app.config.get('PEPPER', '')
         peppered_password = password + pepper
         self.password = bcrypt.generate_password_hash(peppered_password).decode('utf-8')
 
     def verify_password(self, password):
+        """Verify the hashed password."""
+        from app import bcrypt
+        from flask import current_app
         if not self.password:
             return False
-            
-        from flask import current_app
         pepper = current_app.config.get('PEPPER', '')
         peppered_password = password + pepper
         return bcrypt.check_password_hash(self.password, peppered_password)
-
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
 
     def to_dict(self):
         return {

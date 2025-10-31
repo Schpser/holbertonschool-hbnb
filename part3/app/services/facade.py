@@ -44,18 +44,11 @@ class HBnBFacade:
 
     def create_place(self, place_data):
         place_data_copy = place_data.copy()
-        amenities_ids = place_data_copy.pop('amenities', [])
+
+        place_data_copy.pop('amenities', [])
         
         place = Place(**place_data_copy)
-
-        new_place = self.place_repo.add(place)
-        
-        for amenity_id in amenities_ids:
-            amenity = self.get_amenity(amenity_id)
-            if amenity:
-                new_place.add_amenity(amenity)
-        
-        return new_place
+        return self.place_repo.add(place)
 
     def get_place(self, place_id):
         return self.place_repo.get(place_id)
@@ -69,14 +62,11 @@ class HBnBFacade:
     def delete_place(self, place_id):
         return self.place_repo.delete(place_id)
 
+    def get_places_by_owner(self, owner_id):
+        return self.place_repo.get_by_attribute('owner_id', owner_id)
+
     def create_review(self, review_data):
-        review = Review(
-            text=review_data['text'],
-            rating=review_data['rating'], 
-            place_id=review_data['place_id'],
-            user_id=review_data['user_id']
-        )
-        
+        review = Review(**review_data)
         return self.review_repo.add(review)
 
     def get_review(self, review_id):
@@ -86,7 +76,10 @@ class HBnBFacade:
         return self.review_repo.get_all()
 
     def get_reviews_by_place(self, place_id):
-        return [review for review in self.review_repo.get_all() if review.place_id == place_id]
+        return self.review_repo.get_by_attribute('place_id', place_id)
+
+    def get_reviews_by_user(self, user_id):
+        return self.review_repo.get_by_attribute('user_id', user_id)
 
     def create_amenity(self, amenity_data):
         amenity = Amenity(**amenity_data)
@@ -97,5 +90,8 @@ class HBnBFacade:
 
     def get_all_amenities(self):
         return self.amenity_repo.get_all()
+
+    def get_amenity_by_name(self, name):
+        return self.amenity_repo.get_by_attribute('name', name)
 
 facade = HBnBFacade()

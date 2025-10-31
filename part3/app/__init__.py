@@ -19,6 +19,16 @@ def create_app(config_class="config.DevelopmentConfig"):
     jwt.init_app(app)
     db.init_app(app)
 
+    with app.app_context():
+
+        from app.models.user import User
+        from app.models.place import Place  
+        from app.models.review import Review
+        from app.models.amenity import Amenity
+
+        db.create_all()
+        print("✅ Tables créées avec succès!")
+
     from app.api.v1.users import user_namespace as users_ns
     from app.api.v1.amenities import amenity_namespace
     from app.api.v1.places import place_namespace

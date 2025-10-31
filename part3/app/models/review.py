@@ -1,43 +1,33 @@
-from app.models.base_model import BaseModel
+from app import db
+from .base_model import BaseModel
+from sqlalchemy.orm import validates
 
 class Review(BaseModel):
-    def __init__(self, text, rating, place_id, user_id):
-        super().__init__()
+    __tablename__ = 'reviews'
 
+    text = db.Column(db.Text, nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    place_id = db.Column(db.String(36), db.ForeignKey('places.id'), nullable=False)
+
+    @validates('text')
+    def validate_text(self, key, text):
         if not text or len(text.strip()) == 0:
-            raise ValueError("text is required")
-        if not isinstance(rating, int):
-            raise ValueError("rating must be an integer")
-        if rating < 1 or rating > 5:
-            raise ValueError("rating must be between 1 and 5")
+            raise ValueError("Review text cannot be empty")
+        return text.strip()
 
-        self.text = text
-        self.rating = rating
-        self.place_id = place_id
-        self.user_id = user_id
-
-    def update(self, data):
-        """Update review attributes with validation"""
-        for key, value in data.items():
-            if key == 'text':
-                if not value or len(value.strip()) == 0:
-                    raise ValueError("text is required")
-                if len(value) > 1000:
-                    raise ValueError("text must be at most 1000 characters")
-                self.text = value
-            elif key == 'rating':
-                if not isinstance(value, int) or value < 1 or value > 5:
-                    raise ValueError("rating must be an integer between 1 and 5")
-                self.rating = value
+    @validates('rating')
+    def validate_rating(self, key, rating):
+        if not (1 <= rating <= 5):
+            raise ValueError("Rating must be between 1 and 5")
+        return rating
 
     def to_dict(self):
-        """Convert the object to dictionary"""
-        return {
-            'id': self.id,
+        base_dict = super().to_dict()
+        base_dict.update({
             'text': self.text,
             'rating': self.rating,
             'user_id': self.user_id,
-            'place_id': self.place_id,
-            'created_at': self.created_at.isoformat() if hasattr(self, 'created_at') else None,
-            'updated_at': self.updated_at.isoformat() if hasattr(self, 'updated_at') else None
-        }
+            'place_id': self.place_id
+        })
+        return base_dict

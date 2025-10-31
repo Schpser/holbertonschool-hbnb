@@ -1,55 +1,57 @@
-from app.models.base_model import BaseModel
+from app import db
+from .base_model import BaseModel
+from sqlalchemy.orm import validates
+from .association import place_amenity
 
 class Place(BaseModel):
-    def __init__(self, title, description, price, latitude, longitude, owner_id, amenities=None):  # ✅ Ajout amenities
-        super().__init__()
+    __tablename__ = 'places'
 
-        if len(title) == 0 or len(title) > 100:
-            raise ValueError("title name must be between 1 and 100 characters")
-        if not isinstance(price, (int, float)):
-            raise ValueError("price must be a number")
-        if price <= 0:
-            raise ValueError("price must be positive value")
-        if latitude < -90 or latitude > 90:
-            raise ValueError("Must be within the range of -90.0 to 90.0")
-        if longitude < -180 or longitude > 180:
-            raise ValueError("Must be within the range of -180.0 to 180.0")
+    title = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    price = db.Column(db.Numeric(10, 2), nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    owner_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
 
-        self.title = title
-        self.description = description
-        self.price = price
-        self.latitude = latitude
-        self.longitude = longitude
-        self.owner_id = owner_id
+    reviews = db.relationship('Review', backref='place', lazy=True, cascade='all, delete-orphan')
+    amenities = db.relationship('Amenity', secondary=place_amenity, 
+                               backref=db.backref('places', lazy=True), lazy=True)
 
-        self.reviews = []
-        self.amenities = amenities if amenities is not None else []
+    @validates('title')
+    def validate_title(self, key, title):
+        if not title or len(title.strip()) == 0:
+            raise ValueError("Title cannot be empty")
+        if len(title) > 255:
+            raise ValueError("Title must be less than 255 characters")
+        return title.strip()
 
-    def add_review(self, review):
-        """Add a review to the place."""
-        self.reviews.append(review)
+    @validates('price')
+    def validate_price(self, key, price):
+        if price < 0:
+            raise ValueError("Price cannot be negative")
+        return price
 
-    def add_amenity(self, amenity):
-        """Add an amenity to the place."""
-        self.amenities.append(amenity)
+    @validates('latitude')
+    def validate_latitude(self, key, latitude):
+        if not (-90 <= latitude <= 90):
+            raise ValueError("Latitude must be between -90 and 90")
+        return latitude
 
-    def update(self, data):
-        """Update place attributes with validation"""
-        for key, value in data.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
+    @validates('longitude')
+    def validate_longitude(self, key, longitude):
+        if not (-180 <= longitude <= 180):
+            raise ValueError("Longitude must be between -180 and 180")
+        return longitude
 
     def to_dict(self):
-        """Convert the object to dictionary"""
-        return {
-            'id': self.id,
+        base_dict = super().to_dict()
+        base_dict.update({
             'title': self.title,
             'description': self.description,
-            'price': self.price,
+            'price': float(self.price) if self.price else None,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'owner_id': self.owner_id,
-            'amenities': [amenity.id for amenity in self.amenities],
-            'created_at': self.created_at.isoformat() if hasattr(self, 'created_at') else None,
-            'updated_at': self.updated_at.isoformat() if hasattr(self, 'updated_at') else None
-        }
+            'amenities': [amenity.to_dict() for amenity in self.amenities] if self.amenities else []
+        })
+        return base_dict
