@@ -17,29 +17,24 @@ authorizations = {
     }
 }
 
-def create_app(config_class="config.DevelopmentConfig"):
+def create_app():
     app = Flask(__name__)
-    app.config.from_object(config_class)
-
+    app.config.from_object('config.DevelopmentConfig')
+    
     api = Api(app, 
               version='1.0', 
               title='HBnB API', 
               description='HBnB Application API', 
               doc='/docs/',
               authorizations=authorizations,
-              security='Bearer Auth')
+              security='Bearer Auth',
+              serve_challenge_on_401=True)
 
     bcrypt.init_app(app)
     jwt.init_app(app)
     db.init_app(app)
 
     with app.app_context():
-
-        from app.models.user import User
-        from app.models.place import Place  
-        from app.models.review import Review
-        from app.models.amenity import Amenity
-
         db.create_all()
         print("✅ Tables créées avec succès!")
 
@@ -48,7 +43,7 @@ def create_app(config_class="config.DevelopmentConfig"):
     from app.api.v1.places import place_namespace
     from app.api.v1.reviews import review_namespace
     from app.api.v1.auth import api as auth_ns
-    
+
     api.add_namespace(users_ns, path='/api/v1/users')
     api.add_namespace(auth_ns, path='/api/v1/auth')
     api.add_namespace(amenity_namespace, path='/api/v1/amenities')

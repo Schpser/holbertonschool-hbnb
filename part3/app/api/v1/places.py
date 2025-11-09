@@ -207,3 +207,28 @@ class PlaceReviews(Resource):
             return {'error': str(e)}, 404
         except Exception as e:
             return {'error': f'Internal server error: {str(e)}'}, 500
+
+    @jwt_required()
+    @place_namespace.response(200, 'Place deleted successfully')
+    @place_namespace.response(404, 'Place not found')
+    @place_namespace.response(403, 'Not authorized to delete this place')
+    def delete(self, place_id):
+        """Delete a place (Owner or Admin only)"""
+        current_user_id = get_jwt_identity()
+        current_user = facade.get_user(current_user_id)
+        
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+
+        if place.owner_id != current_user_id and (not current_user or not current_user.is_admin):
+            return {'error': 'You can only delete your own places'}, 403
+        
+        try:
+            success = facade.delete_place(place_id)
+            if success:
+                return {'message': 'Place deleted successfully'}, 200
+            else:
+                return {'error': 'Place not found'}, 404
+        except Exception as e:
+            return {'error': f'Internal server error: {str(e)}'}, 500
