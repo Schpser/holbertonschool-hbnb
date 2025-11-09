@@ -1,0 +1,1 @@
+<img src="HBnB P3.png" alt="Description de l'image">
