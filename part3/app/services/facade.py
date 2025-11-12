@@ -45,9 +45,15 @@ class HBnBFacade:
     def create_place(self, place_data):
         place_data_copy = place_data.copy()
 
-        place_data_copy.pop('amenities', [])
-        
+        amenity_ids = place_data_copy.pop('amenities', [])
+
         place = Place(**place_data_copy)
+
+        for amenity_id in amenity_ids:
+            amenity = self.amenity_repo.get(amenity_id)
+            if amenity:
+                place.amenities.append(amenity)
+    
         return self.place_repo.add(place)
 
     def get_place(self, place_id):
@@ -57,7 +63,23 @@ class HBnBFacade:
         return self.place_repo.get_all()
 
     def update_place(self, place_id, place_data):
-        return self.place_repo.update(place_id, place_data)
+        place_data_copy = place_data.copy()
+        amenity_ids = place_data_copy.pop('amenities', None)
+
+        place = self.place_repo.update(place_id, place_data_copy)
+
+        if place and amenity_ids is not None:
+            place.amenities = []
+
+            for amenity_id in amenity_ids:
+                amenity = self.amenity_repo.get(amenity_id)
+                if amenity:
+                    place.amenities.append(amenity)
+
+            from app import db
+            db.session.commit()
+
+        return place
 
     def delete_place(self, place_id):
         return self.place_repo.delete(place_id)

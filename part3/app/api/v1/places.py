@@ -106,12 +106,10 @@ class PlaceList(Resource):
 
 @place_namespace.route('/<place_id>')
 class PlaceResource(Resource):
-    @place_namespace.expect(place_update_model, validate=True)
     @jwt_required()
     @place_namespace.response(200, 'Place details retrieved successfully')
     @place_namespace.response(404, 'Place not found')
     @place_namespace.response(400, 'Invalid input data')
-
     def get(self, place_id):
         """Get place details by ID"""
         try:
@@ -144,7 +142,7 @@ class PlaceResource(Resource):
                 'id': place.id,
                 'title': place.title,
                 'description': place.description,
-                'price': place.price,
+                'price': float(place.price) if place.price else None,
                 'latitude': place.latitude,
                 'longitude': place.longitude,
                 'owner_id': place.owner_id,
@@ -160,7 +158,9 @@ class PlaceResource(Resource):
             return response, 200
         except Exception as e:
             return {'error': f'Internal server error: {str(e)}'}, 500
-    
+
+    @place_namespace.expect(place_update_model, validate=True)
+    @jwt_required()
     def put(self, place_id):
         """Update a place's information"""
         current_user_id = get_jwt_identity()
