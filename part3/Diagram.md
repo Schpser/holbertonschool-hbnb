@@ -1,4 +1,4 @@
-Part 3 diagram
+part 3 diagram
 
 ---
 config:
