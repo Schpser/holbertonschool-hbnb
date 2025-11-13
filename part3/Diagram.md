@@ -20,7 +20,7 @@ erDiagram
         decimal price
         decimal latitude
         decimal longitude
-        int owner_id FK
+        UUID4 owner_id FK
         datetime created_at
         datetime updated_at
     }
@@ -28,8 +28,8 @@ erDiagram
         UUID4 id PK
         string text
         int rating
-        int user_id FK
-        int place_id FK
+        UUID4 user_id FK
+        UUID4 place_id FK
         datetime created_at
         datetime updated_at
     }
