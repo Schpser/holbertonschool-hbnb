@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place Details</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="index.html" class="logo-link">
+                <img src="images/icon.png" alt="Hbnb Logo" class="logo">
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="login.html" id="login-link" class="login-button">Login</a>
+            <a href="#" id="logout-link" class="logout-button" style="display: none;">Logout</a>
+        </div>
+    </nav>
+    </header>
+    <main>
+    <section id="place-details" class="place-details">
+        <div class="place-info">
+            <h2>Cozy Paris Apartment</h2>
+            <div class="place-meta">
+                <p><strong>Host:</strong> John Smith</p>
+                <p><strong>Price:</strong> 89€ / night</p>
+                <p><strong>Location:</strong> Paris, France</p>
+            </div>
+            <div class="place-description">
+                <h3>Description</h3>
+                <p>Beautiful apartment in the heart of Paris with stunning Eiffel Tower view.</p>
+            </div>
+            <div class="amenities-list">
+                <span class="amenity">
+                    <img src="images/icon_bed.png" alt="Beds" class="amenity-icon">
+                    2 beds
+                </span>
+                <span class="amenity">
+                    <img src="images/icon_bath.png" alt="Bathroom" class="amenity-icon">
+                    1 bathroom
+                </span>
+                <span class="amenity">
+                    <img src="images/icon_wifi.png" alt="Wifi" class="amenity-icon">
+                    Wifi
+                </span>
+                <span class="amenity">
+                    <img src="images/icon_kitchen.png" alt="Kitchen" class="amenity-icon">
+                    Equipped kitchen
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <section id="reviews">
+        <h2>Traveler Reviews</h2>
+        <div class="review-card">
+            <div class="review-header">
+                <strong>Mary L.</strong>
+                <span class="rating">
+                <span class="rating-stars">★★★★★</span>
+                <span class="rating-number">5</span>
+                </span>
+            </div>
+            <p class="review-comment">"Beautiful place, clean and the host is easily joinable, I recommand it !"</p>
+            <small class="review-date">Posted on January 15, 2024</small>
+        </div>
+        
+        <div class="review-card">
+            <div class="review-header">
+                <strong>Peter M.</strong>
+                <span class="rating">
+                <span class="rating-stars">★★★★★</span>
+                <span class="rating-number">5</span>
+                </span>
+            </div>
+            <p class="review-comment">"Great value for money, perfect location to visit Paris."</p>
+            <small class="review-date">Posted on January 10, 2024</small>
+        </div>
+    </section>
+
+    <section id="add-review" class="add-review">
+        <h2>Add a Review</h2>
+        <form class="form" id="review-form">
+            <label for="review-text">Your Review:</label>
+            <textarea id="review-text" name="review-text" required></textarea>
+            
+            <label for="rating">Rating:</label>
+            <select id="rating" name="rating" required>
+                <option value="">Select a rating</option>
+                <option value="5">⭐️⭐️⭐️⭐️⭐️ (5 stars)</option>
+                <option value="4">⭐️⭐️⭐️⭐️ (4 stars)</option>
+                <option value="3">⭐️⭐️⭐️ (3 stars)</option>
+                <option value="2">⭐️⭐️ (2 stars)</option>
+                <option value="1">⭐️ (1 star)</option>
+            </select>
+            
+            <button type="submit">Submit Review</button>
+        </form>
+    </section>
+    </main>
+    <script src="scripts.js"></script>
+    <footer class="footer">
+    <div class="footer-content">
+        <p>&copy; 2025 Hbnb. All Right Reserved.</p>
+    </div>
+    </footer>
+</body>
+</html>

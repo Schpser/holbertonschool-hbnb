@@ -1,0 +1,488 @@
+/* 
+  This is a SAMPLE File to get you started. Follow the instructions on the project to complete the tasks. 
+  You'll probably need to override some of theese styles.
+*/
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+/* TITLES */
+h1, h2, h3, h4, h5, h6, 
+.place-name, 
+.brand-name, 
+.review-container h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+body {
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 1rem;
+}
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #545355;
+    color: white;
+}
+
+.logo {
+    height: 80px;
+    width: auto;
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo-link:hover {
+    opacity: 0.8;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-link, .login-button {
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: background-color 0.3s;
+}
+
+.nav-link:hover, .login-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.logout-button {
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background-color: #666;
+    transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+    background-color: #888;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 1rem;
+}
+
+main {
+    padding: 2rem;
+}
+/* CARDS STYLESHEET */
+
+.place-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin: 20px;
+    padding: 10px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    gap: 15px;
+}
+
+.place-image {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.place-content {
+    flex: 1;
+}
+
+.place-name {
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 1.3rem;
+}
+
+.place-price {
+    color: #ff385c;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.place-description {
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.details-button {
+    background-color: #ff385c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.details-button:hover {
+    background-color: #e6004c;
+}
+
+/* PLACE DETAILS STYLES */
+.place-details {
+    margin-bottom: 30px;
+}
+
+.place-info {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+.place-meta {
+    margin: 15px 0;
+}
+
+.place-meta p {
+    margin: 5px 0;
+}
+
+.amenities-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.amenity {
+    background: #f0f0f0;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+}
+
+/* RATING STYLES */
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.rating-stars {
+    color: #ffc107;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+
+.rating-number {
+    font-weight: bold;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+/* AMENITY ICONS STYLES */
+.amenity {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    border: 1px solid #e9ecef;
+}
+
+.amenity-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+/* REVIEW STYLES */
+.review-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin: 20px 0;
+    padding: 15px;
+    background: white;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.review-comment {
+    font-style: italic;
+    margin: 10px 0;
+}
+
+.review-date {
+    color: #666;
+}
+
+/* ADD REVIEW FORM */
+.add-review {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    margin-top: 30px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form label {
+    font-weight: bold;
+}
+
+.form textarea,
+.form select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.form button {
+    background-color: #ff385c;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.form button:hover {
+    background-color: #e6004c;
+}
+
+/* ADD REVIEW PAGE STYLES */
+.review-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.review-subtitle {
+    color: #666;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.review-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.form-group textarea,
+.form-group select {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #ff385c;
+    box-shadow: 0 0 0 2px rgba(255, 56, 92, 0.2);
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.submit-button {
+    background-color: #ff385c;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.submit-button:hover {
+    background-color: #e6004c;
+}
+
+.cancel-button {
+    padding: 12px 20px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    text-decoration: none;
+    color: #333;
+    text-align: center;
+}
+
+.cancel-button:hover {
+    background-color: #f5f5f5;
+}
+
+/* FOOTER */
+.footer {
+    background-color: #f7f7f7;
+    padding: 2rem;
+    margin-top: auto;
+}
+
+.footer-content {
+    text-align: center;
+}
+
+.footer-links {
+    margin-top: 10px;
+}
+
+.footer-links a {
+    color: #666;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.footer-links a:hover {
+    color: #ff385c;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* TAB */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0.5rem 1rem;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .nav-links {
+        gap: 10px;
+    }
+    
+    .place-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .place-image {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto;
+    }
+    
+    main {
+        padding: 1rem;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 480px) {
+    .navbar {
+        padding: 0.5rem;
+    }
+    
+    .logo {
+        height: 30px;
+    }
+    
+    .nav-link, .login-button {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .place-card {
+        margin: 10px;
+        padding: 15px;
+    }
+    
+    .review-container {
+        padding: 20px;
+        margin: 1rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    input, select, textarea {
+        font-size: 16px; /* iOS Fix */
+    }
+}
