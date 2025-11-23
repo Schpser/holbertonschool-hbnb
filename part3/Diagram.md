@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 Part 3 Diagram
+=======
+part 3 diagram
+>>>>>>> 1ac06dfa10ab2102791b07dc4b9f4b8c05e048d6
 
 ---
 config:
