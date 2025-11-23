@@ -107,6 +107,10 @@ document.addEventListener('DOMContentLoaded', () => {
           filterPlacesByMaxPrice(this.value);
       });
   }
+
+    checkAuthStatus();
+    setupEventListeners();
+    setupReviewForm();
 });
 
 function filterPlacesByMaxPrice(maxPrice) {
@@ -129,20 +133,30 @@ function getCookie(name) {
 }
 
 async function checkAuth() {
+    console.log("🔍 checkAuth() appelé");
     const token = getCookie('token'); 
+    console.log("🔑 Token:", token ? "PRÉSENT" : "ABSENT");
+    
     const loginLink = document.getElementById('login-link');
     const logoutLink = document.getElementById('logout-link');
     
     if (token) {
-        loginLink.style.display = 'none';
-        logoutLink.style.display = 'block';
-        console.log('✅ User connected !');
-        const places = await fetchPlaces();
-        displayPlaces(places);
+        console.log("✅ User connecté - masque login, montre logout");
+        if (loginLink) loginLink.style.display = 'none';
+        if (logoutLink) logoutLink.style.display = 'block';
+        
+        try {
+            console.log("🔄 Récupération des places...");
+            const places = await fetchPlaces();
+            displayPlaces(places);
+            console.log("✅ Places affichées avec succès");
+        } catch (error) {
+            console.error('❌ Erreur fetchPlaces:', error);
+        }
     } else {
-        loginLink.style.display = 'block';
-        logoutLink.style.display = 'none';
-        console.log('❌ User disconnected');
+        console.log("❌ User déconnecté - montre login, masque logout");
+        if (loginLink) loginLink.style.display = 'block';
+        if (logoutLink) logoutLink.style.display = 'none';
     }
 }
 
@@ -266,7 +280,13 @@ function getPlaceIdFromURL() {
     const urlParams = new URLSearchParams(window.location.search);
     const placeId = urlParams.get('place_id');
     
-    console.log("🔗 Place ID extrait:", placeId);
+    if (!placeId) {
+        console.error('No place_id found in URL');
+        alert('Invalid place information');
+        // window.location.href = 'index.html';  // COMMENTÉ POUR ÉVITER LA BOUCLE
+        return null;
+    }
+    
     return placeId;
 }
 
@@ -321,7 +341,7 @@ function checkReviewAuthentication() {
     const token = getCookie('token');
     if (!token) {
         alert('Please log in to add a review');
-        window.location.href = 'index.html';
+        // window.location.href = 'index.html';  // COMMENTÉ POUR ÉVITER LA BOUCLE
         return null;
     }
     return token;
@@ -337,7 +357,7 @@ function getPlaceIdFromURL() {
     if (!placeId) {
         console.error('No place_id found in URL');
         alert('Invalid place information');
-        window.location.href = 'index.html';
+        // window.location.href = 'index.html';  // COMMENTÉ POUR ÉVITER LA BOUCLE
         return null;
     }
     
@@ -433,12 +453,6 @@ function setupReviewForm() {
 // =============================================
 // INITIALIZATION
 // =============================================
-
-document.addEventListener('DOMContentLoaded', function() {
-    checkAuthStatus();
-    setupEventListeners();
-    setupReviewForm();
-});
 
 function logout() {
     sessionStorage.removeItem('token');
