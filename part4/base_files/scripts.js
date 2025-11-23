@@ -3,6 +3,34 @@
   Please, follow the project instructions to complete the tasks.
 */
 
+/* AUTH STATUS & EVENT LISTENERS */
+
+function checkAuthStatus() {
+    const token = getCookie('token');
+    const loginLink = document.getElementById('login-link');
+    const logoutLink = document.getElementById('logout-link');
+    
+    if (token) {
+        if (loginLink) loginLink.style.display = 'none';
+        if (logoutLink) logoutLink.style.display = 'block';
+    } else {
+        if (loginLink) loginLink.style.display = 'block';
+        if (logoutLink) logoutLink.style.display = 'none';
+    }
+}
+
+function setupEventListeners() {
+    const logoutLink = document.getElementById('logout-link');
+    if (logoutLink) {
+        logoutLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            logout();
+        });
+    }
+}
+
+/* MAIN DOCUMENT READY */
+
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
@@ -232,17 +260,27 @@ function displayPlaceDetails(place) {
 }
 
 function getPlaceIdFromURL() {
+    console.log("🔗 URL complète:", window.location.href);
+    console.log("🔗 Query string:", window.location.search);
+    
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('place_id');
+    const placeId = urlParams.get('place_id');
+    
+    console.log("🔗 Place ID extrait:", placeId);
+    return placeId;
 }
 
 async function loadPlaceDetails(placeId) {
+    console.log("🔍 loadPlaceDetails appelé avec ID:", placeId);
+    
     const place = await fetchPlaceDetails(placeId);
+    console.log("📦 Données reçues:", place);
     
     if (place) {
-        console.log('Place details loaded:', place);
+        console.log('✅ Place details loaded:', place);
         displayPlaceDetails(place);
     } else {
+        console.log('❌ Failed to load place details');
         alert('Failed to load place details');
     }
 }
@@ -251,7 +289,7 @@ async function fetchPlaceDetails(placeId) {
     try {
         const token = getCookie('token');
         
-        const response = await fetch(`http://localhost:5000/api/v1/places/${placeId}/`, {
+        const response = await fetch(`http://localhost:5000/api/v1/places/${placeId}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -271,6 +309,136 @@ async function fetchPlaceDetails(placeId) {
         return null;
     }
 }
+
+// =============================================
+// REVIEW MANAGEMENT FUNCTIONS
+// =============================================
+
+/**
+ * Check user authentication and redirect if not logged in
+ */
+function checkReviewAuthentication() {
+    const token = getCookie('token');
+    if (!token) {
+        alert('Please log in to add a review');
+        window.location.href = 'index.html';
+        return null;
+    }
+    return token;
+}
+
+/**
+ * Extract place ID from URL query parameters
+ */
+function getPlaceIdFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const placeId = urlParams.get('place_id');
+    
+    if (!placeId) {
+        console.error('No place_id found in URL');
+        alert('Invalid place information');
+        window.location.href = 'index.html';
+        return null;
+    }
+    
+    return placeId;
+}
+
+/**
+ * Submit review to API
+ */
+async function submitReview(token, placeId, reviewData) {
+    try {
+        const response = await fetch('http://localhost:5000/api/v1/reviews/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(reviewData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to submit review');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error submitting review:', error);
+        throw error;
+    }
+}
+
+/**
+ * Handle review form submission
+ */
+
+function setupReviewForm() {
+    const reviewForm = document.getElementById('review-form');
+    const token = checkReviewAuthentication();
+    const placeId = getPlaceIdFromURL();
+
+    if (!token || !placeId) return;
+
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const reviewText = document.getElementById('review-text').value.trim();
+            const rating = document.getElementById('rating').value;
+
+            if (!reviewText) {
+                alert('Please enter your review text');
+                return;
+            }
+
+            if (!rating) {
+                alert('Please select a rating');
+                return;
+            }
+            const reviewData = {
+                place_id: placeId,
+                text: reviewText,
+                rating: parseInt(rating)
+            };
+
+            try {
+                const submitButton = reviewForm.querySelector('.submit-button');
+                submitButton.textContent = 'Submitting...';
+                submitButton.disabled = true;
+
+                // Submit review
+                await submitReview(token, placeId, reviewData);
+                alert('Review submitted successfully!');
+                reviewForm.reset();
+                
+                // Redirect back to place page
+                setTimeout(() => {
+                    window.location.href = `place.html?place_id=${placeId}`;
+                }, 1500);
+
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+                
+                // Reset button
+                const submitButton = reviewForm.querySelector('.submit-button');
+                submitButton.textContent = 'Submit Review';
+                submitButton.disabled = false;
+            }
+        });
+    }
+}
+
+// =============================================
+// INITIALIZATION
+// =============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    checkAuthStatus();
+    setupEventListeners();
+    setupReviewForm();
+});
 
 function logout() {
     sessionStorage.removeItem('token');
