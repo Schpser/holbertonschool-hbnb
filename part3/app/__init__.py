@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_restx import Api
 from flask_jwt_extended import JWTManager
@@ -19,14 +20,8 @@ authorizations = {
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object('config.DevelopmentConfig')
-    
-    @app.after_request
-    def after_request(response):
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
-        return response
 
     api = Api(app, 
               version='1.0', 
