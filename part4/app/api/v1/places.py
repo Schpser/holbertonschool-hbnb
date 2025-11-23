@@ -157,7 +157,7 @@ class PlaceResource(Resource):
                     'id': review.id,
                     'text': review.text,
                     'rating': review.rating,
-                    'user_id': review_user.id if review_user else 'Unknown'
+                    'user_name': f"{review_user.first_name} {review_user.last_name}" if review_user else 'Unknown'
                 })
             
             response = {

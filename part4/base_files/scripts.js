@@ -213,7 +213,8 @@ function displayPlaces(places) {
 }
 
 function displayPlaceDetails(place) {
-    // Affiche les informations principales
+    console.log("🎯 Place data received:", place); // ⬅️ AJOUTE CE LOG
+    
     const placeDetails = document.getElementById('place-details');
     
     placeDetails.innerHTML = `
@@ -237,7 +238,6 @@ function displayPlaceDetails(place) {
                     ${place.amenities && place.amenities.length > 0 
                         ? place.amenities.map(amenity => `
                             <span class="amenity">
-                                <img src="images/icon_${amenity.name?.toLowerCase() || 'default'}.png" alt="${amenity.name}" class="amenity-icon">
                                 ${amenity.name}
                             </span>
                         `).join('')
@@ -248,7 +248,7 @@ function displayPlaceDetails(place) {
         </div>
     `;
     
-    // Affiche les reviews
+    // Affiche les reviews avec noms d'users
     const reviewsSection = document.getElementById('reviews');
     
     if (place.reviews && place.reviews.length > 0) {
@@ -257,7 +257,7 @@ function displayPlaceDetails(place) {
             ${place.reviews.map(review => `
                 <div class="review-card">
                     <div class="review-header">
-                        <strong>User ${review.user_id}</strong>
+                        <strong>${review.user_name || `User ${review.user_id}`}</strong>
                         <span class="rating">
                             <span class="rating-stars">${'★'.repeat(review.rating || 0)}${'☆'.repeat(5 - (review.rating || 0))}</span>
                             <span class="rating-number">${review.rating || 0}/5</span>
@@ -272,7 +272,6 @@ function displayPlaceDetails(place) {
         reviewsSection.innerHTML = '<h2>Traveler Reviews</h2><p>No reviews yet</p>';
     }
 }
-
 function getPlaceIdFromURL() {
     console.log("🔗 URL complète:", window.location.href);
     console.log("🔗 Query string:", window.location.search);
@@ -282,7 +281,6 @@ function getPlaceIdFromURL() {
     
     if (!placeId) {
         console.error('No place_id found in URL');
-        alert('Invalid place information');
         // window.location.href = 'index.html';  // COMMENTÉ POUR ÉVITER LA BOUCLE
         return null;
     }
@@ -291,17 +289,22 @@ function getPlaceIdFromURL() {
 }
 
 async function loadPlaceDetails(placeId) {
-    console.log("🔍 loadPlaceDetails appelé avec ID:", placeId);
+    console.log("🔄 DEBUT loadPlaceDetails, placeId:", placeId);
     
-    const place = await fetchPlaceDetails(placeId);
-    console.log("📦 Données reçues:", place);
-    
-    if (place) {
-        console.log('✅ Place details loaded:', place);
+    try {
+        const response = await fetch(`http://localhost:5000/api/v1/places/${placeId}`);
+        
+        if (!response.ok) throw new Error('API error');
+        
+        const place = await response.json();
+        console.log("✅ DONNÉES COMPLÈTES reçues:", place); // ⬅️ LOG COMPLET
+        console.log("🔍 Amenities dans la réponse:", place.amenities); // ⬅️ SPECIFIQUE
+        
         displayPlaceDetails(place);
-    } else {
-        console.log('❌ Failed to load place details');
-        alert('Failed to load place details');
+        
+    } catch (error) {
+        console.error("💥 Erreur:", error);
+        document.getElementById('place-details').innerHTML = `<h1>Erreur</h1><p>${error.message}</p>`;
     }
 }
 
@@ -340,7 +343,6 @@ async function fetchPlaceDetails(placeId) {
 function checkReviewAuthentication() {
     const token = getCookie('token');
     if (!token) {
-        alert('Please log in to add a review');
         // window.location.href = 'index.html';  // COMMENTÉ POUR ÉVITER LA BOUCLE
         return null;
     }
@@ -356,7 +358,6 @@ function getPlaceIdFromURL() {
     
     if (!placeId) {
         console.error('No place_id found in URL');
-        alert('Invalid place information');
         // window.location.href = 'index.html';  // COMMENTÉ POUR ÉVITER LA BOUCLE
         return null;
     }
