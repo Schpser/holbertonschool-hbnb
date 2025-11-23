@@ -29,12 +29,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (response.ok) {
-                document.cookie = `token=${data.access_token}; path=/; max-age=86400`; // 24h
-                window.location.href = 'index.html';
-            }
+                    console.log('Token received:', data.access_token);
+                    sessionStorage.setItem('token', data.access_token);
+                    window.location.href = 'index.html';
+                }
                 else {
-                alert('Login failed: ' + (data.error || 'Unknown error'));
-            }
+                    const errorMessage = document.getElementById('error-message');
+                    if (data.error === 'Invalid credentials') {
+                        errorMessage.textContent = 'Wrong email or password';
+                    } else {
+                        errorMessage.textContent = data.error || 'Login failed';
+                    }
+                    errorMessage.style.display = 'block';
+                }
                 
             } catch (error) {
                 console.error('Error:', error);
@@ -54,17 +61,43 @@ document.addEventListener('DOMContentLoaded', () => {
             logout();
         });
     }
+    if (window.location.pathname.includes('place.html')) {
+    const placeId = getPlaceIdFromURL();
+    if (placeId) {
+        loadPlaceDetails(placeId);
+    } else {
+        console.error('No place ID found in URL');
+    }
+      }
+
+  const maxPriceSlider = document.getElementById('max-price');
+  const priceDisplay = document.getElementById('price-display');
+
+  if (maxPriceSlider && priceDisplay) {
+      maxPriceSlider.addEventListener('input', function() {
+          priceDisplay.textContent = `€${this.value}`;
+          filterPlacesByMaxPrice(this.value);
+      });
+  }
 });
 
-function getCookie(name) {
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-        const [cookieName, cookieValue] = cookie.trim().split('=');
-        if (cookieName === name) {
-            return decodeURIComponent(cookieValue);
+function filterPlacesByMaxPrice(maxPrice) {
+    const placeCards = document.querySelectorAll('.place-card');
+    
+    placeCards.forEach(card => {
+        const priceText = card.querySelector('.place-price').textContent;
+        const price = parseInt(priceText.match(/\d+/)) || 0;
+        
+        if (price <= parseInt(maxPrice)) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
         }
-    }
-    return null;
+    });
+}
+
+function getCookie(name) {
+    return sessionStorage.getItem(name);
 }
 
 async function checkAuth() {
@@ -89,7 +122,7 @@ async function fetchPlaces() {
     /* GET PLACES */
     try {
         const token = getCookie('token');
-        const response = await fetch('http://localhost:5000/api/v1/places', {
+        const response = await fetch('http://localhost:5000/api/v1/places/', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -125,10 +158,11 @@ function displayPlaces(places) {
         placeCard.innerHTML = `
             <img src="images/icon_bed.png" alt="Place" class="place-image">
             <div class="place-content">
-                <h3 class="place-name">${place.name || 'Unnamed Place'}</h3>
-                <p class="place-price">€${place.price_per_night || 'N/A'} / night</p>
-                <p class="place-description">${place.description || 'No description available'}</p>
-                <button class="details-button" onclick="viewPlaceDetails('${place.id}')">View Details</button>
+              <h3 class="place-name">${place.title || 'Unnamed Place'}</h3>
+              <p class="place-price">€${place.price || 'N/A'} / night</p>
+              <p class="place-location">Location: ${place.latitude}, ${place.longitude}</p>
+              <p class="place-description">${place.description || 'No description available'}</p>
+              <button class="details-button" onclick="location.href='place.html?place_id=${place.id}'">View Details</button>
             </div>
         `;
         
@@ -136,8 +170,110 @@ function displayPlaces(places) {
     });
 }
 
+function displayPlaceDetails(place) {
+    // Affiche les informations principales
+    const placeDetails = document.getElementById('place-details');
+    
+    placeDetails.innerHTML = `
+        <div class="place-info">
+            <h2>${place.title || 'Unnamed Place'}</h2>
+            
+            <div class="place-meta">
+                <p><strong>Host:</strong> ${place.owner?.first_name || 'Unknown'} ${place.owner?.last_name || ''}</p>
+                <p><strong>Price:</strong> €${place.price || 'N/A'} / night</p>
+                <p><strong>Location:</strong> ${place.latitude}, ${place.longitude}</p>
+            </div>
+            
+            <div class="place-description">
+                <h3>Description</h3>
+                <p>${place.description || 'No description available'}</p>
+            </div>
+            
+            <div class="place-amenities">
+                <h3>Amenities</h3>
+                <div class="amenities-list">
+                    ${place.amenities && place.amenities.length > 0 
+                        ? place.amenities.map(amenity => `
+                            <span class="amenity">
+                                <img src="images/icon_${amenity.name?.toLowerCase() || 'default'}.png" alt="${amenity.name}" class="amenity-icon">
+                                ${amenity.name}
+                            </span>
+                        `).join('')
+                        : '<p>No amenities listed</p>'
+                    }
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Affiche les reviews
+    const reviewsSection = document.getElementById('reviews');
+    
+    if (place.reviews && place.reviews.length > 0) {
+        reviewsSection.innerHTML = `
+            <h2>Traveler Reviews</h2>
+            ${place.reviews.map(review => `
+                <div class="review-card">
+                    <div class="review-header">
+                        <strong>User ${review.user_id}</strong>
+                        <span class="rating">
+                            <span class="rating-stars">${'★'.repeat(review.rating || 0)}${'☆'.repeat(5 - (review.rating || 0))}</span>
+                            <span class="rating-number">${review.rating || 0}/5</span>
+                        </span>
+                    </div>
+                    <p class="review-comment">"${review.text || 'No comment'}"</p>
+                    <small class="review-date">Posted recently</small>
+                </div>
+            `).join('')}
+        `;
+    } else {
+        reviewsSection.innerHTML = '<h2>Traveler Reviews</h2><p>No reviews yet</p>';
+    }
+}
+
+function getPlaceIdFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('place_id');
+}
+
+async function loadPlaceDetails(placeId) {
+    const place = await fetchPlaceDetails(placeId);
+    
+    if (place) {
+        console.log('Place details loaded:', place);
+        displayPlaceDetails(place);
+    } else {
+        alert('Failed to load place details');
+    }
+}
+
+async function fetchPlaceDetails(placeId) {
+    try {
+        const token = getCookie('token');
+        
+        const response = await fetch(`http://localhost:5000/api/v1/places/${placeId}/`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch place details');
+        }
+        
+        const place = await response.json();
+        return place;
+        
+    } catch (error) {
+        console.error('Error fetching place details:', error);
+        return null;
+    }
+}
+
 function logout() {
-    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    sessionStorage.removeItem('token');
     alert('Logged out successfully! 👋');
     window.location.href = 'index.html';
 }
